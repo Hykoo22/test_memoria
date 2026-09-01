@@ -2,6 +2,7 @@
 <html lang="es">
 <head>
     <link rel="manifest" href="manifest.json">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Memoria Visual</title>
@@ -255,28 +256,63 @@ table {
   
 </head>
 <body>
+        <dialog id="dialWin">
+    <h3>¡Atención!</h3>
+    <p>Has ganado.</p>
+    <button id="btnAceptar">Aceptar</button>
+    </dialog>
+<dialog id="dialLose">
+    <h3>¡Atención!</h3>
+    <p>Has perdido.</p>
+    <button id="btnLAceptar">Aceptar</button>
+    </dialog>
 <div class="tiempo-barra-contenedor">
         <div id="barraRelleno" class="tiempo-barra-relleno"></div>
     </div>
 
     <script>
-        function validanumero(numero){
-            alert(numero);
-        }
+        
 
-        const btnEntrar = document.getElementById('btnEntrar');
+        // 1. Obtenemos la referencia de la tabla
+       /*  const tabla = document.getElementById('tbordena-numeros');
+
+        // 2. Escuchamos el evento click en toda la tabla
+        tabla.addEventListener('click', function(event) {
+        // event.target es el elemento exacto que se ha pulsado
+        const elementoPulsado = event.target;
+
+        // Verificamos si lo que se pulsó es efectivamente una celda (TD)
+        if (elementoPulsado.tagName === 'TD') {
+            // 3. Pasamos la celda pulsada a tu función
+            procesarCelda(elementoPulsado);
+        }
+        });
+
+        // Tu función personalizada
+        function procesarCelda(celda) {
+            alert('Objeto celda:', celda);
+            alert('Valor de la celda:', celda.innerText); */
+/*             console.log('Índice de columna:', celda.cellIndex);
+            console.log('Índice de fila:', celda.parentElement.rowIndex);
+
+            // Ejemplo de manipulación: cambiar el fondo de la celda pulsada
+            celda.style.backgroundColor = '#4CAF50';
+            celda.style.color = 'white'; 
+        }*/
+
+/*         const btnEntrar = document.getElementById('btnEntrar');
         const btnSalir = document.getElementById('btnSalir');
-        const estadoText = document.getElementById('estado');
+        const estadoText = document.getElementById('estado'); */
 
         // 1. Función para activar el modo pantalla completa
-        function entrarPantallaCompleta() {
+        /* function entrarPantallaCompleta() {
             const elem = document.documentElement; // Aplica a toda la página
 
             if (elem.requestFullscreen) {
                 elem.requestFullscreen();
-            } else if (elem.webkitRequestFullscreen) { /* Safari / iOS */
+            } else if (elem.webkitRequestFullscreen) { /* Safari / iOS 
                 elem.webkitRequestFullscreen();
-            } else if (elem.msRequestFullscreen) { /* IE11 */
+            } else if (elem.msRequestFullscreen) { /* IE11 
                 elem.msRequestFullscreen();
             }
             var boton = document.getElementById('btn-pantcomp');
@@ -310,7 +346,10 @@ table {
             btnEntrar.disabled = false;
             btnSalir.disabled = true;
         }
-        }
+        } */
+        const enterosAleatorios = [];
+
+        const celdasNumeros = [];
 
         function rellenatabla(){
             
@@ -324,9 +363,6 @@ table {
             var min = 0;
             var max = 99;
 
-            const enterosAleatorios = [];
-
-            const celdasNumeros = [];
 
             for (let i = 0; i < cantidad; i++) {
                 // Genera un entero aleatorio entre min y max (ambos incluidos)
@@ -353,7 +389,7 @@ table {
 
                 document.getElementById("cell-" + celdasNumeros[i]).textContent=enterosAleatorios[i];
             }
-            
+            enterosAleatorios.sort(function(a,b){return a - b;});
             iniciarBarraTiempo(20000);
         }
        function  iniciarBarraTiempo(tiempo) {
@@ -390,6 +426,8 @@ table {
 
             }, intervaloMs);
     }
+
+    
     </script>
     <!-- BARRA LATERAL / MENÚ -->
     <aside>
@@ -405,13 +443,14 @@ table {
         <nav>
             
             <ul>
-                <button onclick="entrarPantallaCompleta()" id="btn-pantcomp" class="btn-comenzar">Agrandar</button>
-            <button onclick="rellenatabla(this)" id="btn-comenzar" class="btn-comenzar" disabled style="background-color: grey;
-             cursor: 'not-allowed'">Comenzar</button>
+                <!-- <button onclick="entrarPantallaCompleta()" id="btn-pantcomp" class="btn-comenzar">Agrandar</button> -->
+            <button onclick="rellenatabla(this)" id="btn-comenzar" class="btn-comenzar">Comenzar</button>
             </ul>
             <ul>
+                <br>
                 Marcador
-                
+                <br>
+                <label id="label-score">0</label>
             </ul>
         </nav>
     </aside>
@@ -548,8 +587,81 @@ table {
                     <td id="cell-99" style="border: 1px solid; "></td>
                 </tr>
             </table>
+             <script>
+                const tabla = document.getElementById('tbordena-numeros');
+                let dialWin = document.getElementById('dialWin');
+                let btnAceptar = document.getElementById('btnAceptar');
+                let dialLose = document.getElementById('dialLose');
+                let btnLAceptar = document.getElementById('btnAceptar');
+                    // Cerrar la ventana al pulsar Aceptar
+                    btnAceptar.addEventListener('click', () => {
+                        dialWin.close();
+                    });
+
+                    // Cerrar la ventana al pulsar Aceptar
+                    btnLAceptar.addEventListener('click', () => {
+                        dialLose.close();
+                    });
+
+                    function avisoWin() {
+                        Swal.fire({
+                        title: 'Has ganado!',
+                        text: 'Enhorabuena, has acertado los números',
+                        icon: 'success', // Icono de éxito (verde)
+                        confirmButtonText: 'Aceptar'
+                        });
+                    }
+
+                    function avisoLose() {
+                        Swal.fire({
+                        title: 'Has perdido!',
+                        text: 'No era el número correcto',
+                        icon: 'error', // Icono de éxito (verde)
+                        confirmButtonText: 'Aceptar'
+                        });
+                    }
+
+                // Escuchamos el click y creamos una función que se ejecutará SOLO al hacer clic
+                tabla.addEventListener('click', function(event) {
+                    const celda = event.target;
+
+                    // Comprobamos que lo pulsado sea una celda TD
+                    if (celda.tagName === 'TD') {
+                    procesarCelda(celda);
+                    }
+                });
+
+                function procesarCelda(celdaPulsada) {
+                    // Para obtener el texto de la celda usa textContent o innerText:
+                    const valor = celdaPulsada.textContent;
+                    const fila = celdaPulsada.parentElement.rowIndex;
+                    const columna = celdaPulsada.cellIndex;
+                    let numcelda = fila.toString() + columna.toString();
+                    /*alert("Has pulsado la celda con valor: " + valor + "\nFila: " + fila + ", Columna: " + columna);*/
+                    
+
+                    if(celdaPulsada.textContent !== ""){
+                        if(celdaPulsada.textContent == enterosAleatorios[0]){
+                            document.getElementById("cell-" + numcelda).textContent="";
+                            enterosAleatorios.shift();
+                            document.getElementById('label-score').textContent = parseInt(document.getElementById('label-score').textContent,10) + 10;
+                            if(enterosAleatorios.length === 0)
+                            {
+                                avisoWin();
+                            }
+
+                        }
+                        else
+                        {
+                            avisoLose();
+                        }
+                    }
+
+                }
+                </script>
         </section>
     </main>
+        <!-- Estructura del modal en HTML -->
 
 </body>
 </html>
