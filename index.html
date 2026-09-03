@@ -52,23 +52,51 @@
             background-color: #218838;
         }
 
-        /* TABLA DE JUEGO */
+        /* BOTÓN SALIR PANTALLA COMPLETA (ROJIZO) */
+        .btn-salir-fullscreen {
+            background-color: #DC2626;
+            color: #ffffff;
+            border: none;
+            border-radius: 20px;
+            padding: 10px 18px;
+            font-size: 13px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 6px;
+            transition: background-color 0.3s ease, opacity 0.3s ease;
+        }
+
+        .btn-salir-fullscreen:hover:not(:disabled) {
+            background-color: #B91C1C;
+        }
+
+        .btn-salir-fullscreen:disabled {
+            background-color: #475569;
+            color: #94A3B8;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        /* TABLA DE JUEGO ADAPTABLE */
         table {
             table-layout: fixed;
             border-collapse: separate;
             border-spacing: 4px;
             margin: 0 auto;
+            max-width: 90vw;
+            max-height: 70vh;
         }
 
         td, th {
-            width: 80px;
-            height: 60px;
+            width: clamp(28px, 5.5vw, 75px);
+            height: clamp(28px, 5.5vh, 55px);
             background-color: var(--cell-bg);
             color: #FFFFFF;
             border: 2px solid #334155;
             border-radius: 8px;
             font-family: system-ui, -apple-system, sans-serif;
-            font-size: 36px;
+            font-size: clamp(14px, 2.2vw, 32px);
             font-weight: bold;
             text-align: center;
             vertical-align: middle;
@@ -91,7 +119,7 @@
         /* BARRA SUPERIOR DE TIEMPO */
         .tiempo-barra-contenedor {
             width: 100%;
-            height: 20px;
+            height: 15px;
             background-color: #334155;
             position: fixed;
             top: 0;
@@ -193,27 +221,33 @@
         /* CONTENIDO PRINCIPAL */
         main {
             flex: 1;
-            padding: 40px;
+            padding: 20px;
             overflow-y: auto;
             background-color: var(--main-bg);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
         }
 
         header {
-            margin-bottom: 25px;
+            margin-bottom: 15px;
+            text-align: center;
         }
 
         header h2 {
-            font-size: 2rem;
+            font-size: 1.8rem;
             color: #F8FAFC;
-            margin-bottom: 8px;
+            margin-bottom: 4px;
         }
 
         header p {
             color: #94A3B8;
+            font-size: 0.95rem;
         }
 
-        /* RESPONSIVE */
-        @media (max-width: 768px) {
+        /* RESPONSIVE (IPAD / MÓVILES) */
+        @media (max-width: 1024px) {
             body {
                 flex-direction: column;
             }
@@ -221,15 +255,42 @@
             aside {
                 width: 100%;
                 height: auto;
-                padding: 15px;
+                padding: 12px 20px;
             }
 
             .brand {
-                margin-bottom: 15px;
+                margin-bottom: 10px;
+            }
+
+            .menu-label {
+                display: none;
+            }
+
+            .panel-control {
+                flex-direction: row;
+                flex-wrap: wrap;
+                justify-content: center;
+                align-items: center;
+                gap: 10px;
+            }
+
+            .stat-card {
+                padding: 6px 12px;
+                min-width: 90px;
+            }
+
+            .stat-value {
+                font-size: 1.2rem;
+            }
+
+            .btn-comenzar, .btn-salir-fullscreen {
+                width: auto;
+                margin-top: 0;
+                padding: 8px 16px;
             }
 
             main {
-                padding: 20px;
+                padding: 10px;
             }
         }
     </style>
@@ -281,6 +342,11 @@
                 <span class="stat-title">MÁXIMA HISTÓRICA</span>
                 <span id="label-record" class="stat-value record">0</span>
             </div>
+
+            <!-- Botón de Salir de Pantalla Completa -->
+            <button id="btn-salir-fullscreen" class="btn-salir-fullscreen" disabled>
+                Salir Pantalla Completa
+            </button>
         </div>
     </aside>
 
@@ -331,7 +397,46 @@
         const TIEMPO_TOTAL_MS = 20000;
         let cantidadNumeros = 5;
 
-        // 3. Funciones de Firebase
+        // 3. Funciones para Pantalla Completa
+        function estaEnPantallaCompleta() {
+            return !!(document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement);
+        }
+
+        function solicitarPantallaCompleta() {
+            const elem = document.documentElement;
+            if (!estaEnPantallaCompleta()) {
+                if (elem.requestFullscreen) {
+                    elem.requestFullscreen().catch(err => console.log(err));
+                } else if (elem.webkitRequestFullscreen) {
+                    elem.webkitRequestFullscreen();
+                } else if (elem.msRequestFullscreen) {
+                    elem.msRequestFullscreen();
+                }
+            }
+        }
+
+        function salirPantallaCompleta() {
+            if (estaEnPantallaCompleta()) {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                } else if (document.webkitExitFullscreen) {
+                    document.webkitExitFullscreen();
+                } else if (document.msExitFullscreen) {
+                    document.msExitFullscreen();
+                }
+            }
+        }
+
+        function actualizarEstadoBotonFullscreen() {
+            const btnSalir = document.getElementById('btn-salir-fullscreen');
+            btnSalir.disabled = !estaEnPantallaCompleta();
+        }
+
+        ['fullscreenchange', 'webkitfullscreenchange', 'mozfullscreenchange', 'MSFullscreenChange'].forEach(event => {
+            document.addEventListener(event, actualizarEstadoBotonFullscreen);
+        });
+
+        // 4. Funciones de Firebase
         async function cargarRecordHistorico() {
             try {
                 const docRef = doc(db, "puntuaciones", "recordGlobal");
@@ -368,7 +473,7 @@
 
         cargarRecordHistorico();
 
-        // 4. Funciones de limpieza e interfaz
+        // 5. Funciones de limpieza e interfaz
         function limpiarTablero() {
             for (let i = 0; i < 100; i++) {
                 const celda = document.getElementById(`cell-${i}`);
@@ -382,7 +487,6 @@
         }
 
         function reiniciarJuego() {
-            // Limpiar temporizador al perder/acabar partida
             if (temporizador) {
                 clearInterval(temporizador);
                 temporizador = null;
@@ -399,7 +503,7 @@
             boton.style.cursor = 'pointer';
         }
 
-        // 5. Avisos y alertas de fin de partida
+        // 6. Avisos y alertas de fin de partida
         function avisoTiempoAgotado() {
             const puntuacionActual = parseInt(document.getElementById('label-score').textContent, 10);
             guardarPuntuacion(puntuacionActual);
@@ -428,7 +532,7 @@
             });
         }
 
-        // 6. Control de la barra de tiempo (Con aceleración por nivel)
+        // 7. Control de la barra de tiempo
         function iniciarBarraTiempo(tiempo) {
             const intervaloMs = 50;
             const barra = document.getElementById('barraRelleno');
@@ -440,7 +544,6 @@
             if (temporizador) clearInterval(temporizador);
 
             temporizador = setInterval(() => {
-                // ACELERACIÓN: La barra baja un 5% más rápido por cada nivel superado
                 const nivelActual = cantidadNumeros - 4;
                 const velocidadConsumo = intervaloMs * (1 + (nivelActual - 1) * 0.05);
 
@@ -466,8 +569,10 @@
             }, intervaloMs);
         }
 
-        // 7. Generar nuevo nivel
+        // 8. Generar nuevo nivel
         function rellenatabla() {
+            solicitarPantallaCompleta();
+
             const boton = document.getElementById('btn-comenzar');
             boton.style.backgroundColor = '#808080';
             boton.style.cursor = 'not-allowed';
@@ -496,14 +601,13 @@
 
             enterosAleatorios.sort((a, b) => a - b);
 
-            // Iniciar nueva partida
             if (!temporizador || tiempoRestante <= 0) {
                 document.getElementById('label-score').textContent = '0';
                 iniciarBarraTiempo(TIEMPO_TOTAL_MS);
             }
         }
 
-        // 8. Lógica de pulsación de celdas
+        // 9. Lógica de pulsación de celdas
         function procesarCelda(celdaPulsada) {
             if (celdaPulsada.textContent !== "") {
                 const valorCelda = parseInt(celdaPulsada.textContent, 10);
@@ -513,23 +617,19 @@
                     celdaPulsada.textContent = "";
                     enterosAleatorios.shift();
 
-                    // PUNTUACIÓN SEGÚN EL NIVEL
                     const nivelActual = cantidadNumeros - 4;
                     const puntosPorAcierto = 10 + (nivelActual - 1) * 2;
 
                     const scoreLabel = document.getElementById('label-score');
                     scoreLabel.textContent = parseInt(scoreLabel.textContent, 10) + puntosPorAcierto;
 
-                    // Bonus de tiempo por acierto individual (+2s)
                     tiempoRestante += 2000;
                     if (tiempoRestante > TIEMPO_TOTAL_MS) tiempoRestante = TIEMPO_TOTAL_MS;
 
-                    // Si completa el panel
                     if (enterosAleatorios.length === 0) {
                         cantidadNumeros++;
                         actualizarNivelUI();
 
-                        // Bonus de tiempo grande por panel (+5s)
                         tiempoRestante += 5000;
                         if (tiempoRestante > TIEMPO_TOTAL_MS) tiempoRestante = TIEMPO_TOTAL_MS;
 
@@ -557,8 +657,9 @@
             }
         }
 
-        // 9. Asignación de Event Listeners
+        // 10. Asignación de Event Listeners
         document.getElementById('btn-comenzar').addEventListener('click', rellenatabla);
+        document.getElementById('btn-salir-fullscreen').addEventListener('click', salirPantallaCompleta);
 
         document.getElementById('tbordena-numeros').addEventListener('click', (event) => {
             if (event.target.tagName === 'TD') {
