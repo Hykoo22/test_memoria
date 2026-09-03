@@ -1,0 +1,925 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <link rel="manifest" href="manifest.json">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cálculo Mental - Mente En Forma</title>
+  
+    <style>
+        /* CSS RESET & VARIABLES */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        :root {
+            --primary-color: #3B82F6;
+            --sidebar-bg: #1E293B;
+            --main-bg: #0F172A;
+            --cell-bg: #1E293B;
+            --cell-hover: #334155;
+            --sidebar-text: #94A3B8;
+            --text-color: #F8FAFC;
+        }
+
+        body {
+            display: flex;
+            height: 100vh;
+            background-color: var(--main-bg);
+            color: var(--text-color);
+            overflow: hidden;
+        }
+
+        /* BOTÓN COMENZAR */
+        .btn-comenzar {
+            background-color: #28a745;
+            color: #ffffff;
+            border: none;
+            border-radius: 20px;
+            padding: 12px 24px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn-comenzar:hover {
+            background-color: #218838;
+        }
+
+        /* BOTÓN SALIR PANTALLA COMPLETA */
+        .btn-salir-fullscreen {
+            background-color: #DC2626;
+            color: #ffffff;
+            border: none;
+            border-radius: 20px;
+            padding: 10px 18px;
+            font-size: 13px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 6px;
+            transition: background-color 0.3s ease, opacity 0.3s ease;
+        }
+
+        .btn-salir-fullscreen:hover:not(:disabled) {
+            background-color: #B91C1C;
+        }
+
+        .btn-salir-fullscreen:disabled {
+            background-color: #475569;
+            color: #94A3B8;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        /* BARRA SUPERIOR DE TIEMPO */
+        .tiempo-barra-contenedor {
+            width: 100%;
+            height: 15px;
+            background-color: #334155;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+        }
+
+        .tiempo-barra-relleno {
+            height: 100%;
+            width: 100%;
+            background-color: #4CAF50;
+            transition: width 0.1s linear, background-color 0.5s ease;
+        }
+
+        /* BARRA LATERAL (SIDEBAR) */
+        aside {
+            width: 230px;
+            background-color: var(--sidebar-bg);
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.3);
+            z-index: 10;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 25px;
+            color: #FFFFFF;
+        }
+
+        .brand svg {
+            width: 40px;
+            height: 40px;
+            fill: var(--primary-color);
+        }
+
+        .brand h1 {
+            font-size: 1.3rem;
+            font-weight: 700;
+        }
+
+        .menu-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            color: var(--sidebar-text);
+            letter-spacing: 1px;
+            margin-bottom: 15px;
+        }
+
+        /* PANEL Y TARJETAS ESTADÍSTICAS DEL MENÚ */
+        .panel-control {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .stat-card {
+            background-color: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 10px 14px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+            transition: transform 0.2s ease, border-color 0.2s ease;
+        }
+
+        .stat-card:hover {
+            border-color: var(--primary-color);
+            transform: translateY(-2px);
+        }
+
+        .stat-title {
+            display: block;
+            font-size: 0.68rem;
+            font-weight: 700;
+            color: var(--sidebar-text);
+            letter-spacing: 1.5px;
+            margin-bottom: 2px;
+        }
+
+        .stat-value {
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: #FFFFFF;
+            font-family: 'Courier New', Courier, monospace;
+        }
+
+        .stat-value.highlight {
+            color: #4ADE80;
+        }
+
+        .stat-value.record {
+            color: #FBBF24;
+        }
+
+        /* CONTENIDO PRINCIPAL */
+        main {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            background-color: var(--main-bg);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        header {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        header h2 {
+            font-size: 1.8rem;
+            color: #F8FAFC;
+            margin-bottom: 4px;
+        }
+
+        header p {
+            color: #94A3B8;
+            font-size: 0.95rem;
+        }
+
+        /* ÁREA DE JUEGO DIVIDIDA */
+        .game-container {
+            display: flex;
+            flex-direction: row;
+            align-items: flex-end;
+            justify-content: center;
+            gap: 40px;
+            width: 100%;
+            max-width: 900px;
+            background-color: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+        }
+
+        /* COLUMNAS IZQUIERDA Y DERECHA */
+        .columna-juego {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+        }
+
+        .columna-juego.derecha {
+            max-width: 320px;
+        }
+
+        /* CABECERA EXTERIOR DE INTENTOS */
+        .intentos-contenedor-exterior {
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            background-color: var(--sidebar-bg);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            margin-bottom: 15px;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .intentos-titulo {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: #CBD5E1;
+            letter-spacing: 1.5px;
+            margin-right: 4px;
+        }
+
+        .corazon {
+            font-size: 1.6rem;
+            transition: all 0.3s ease;
+        }
+
+        .corazon.activo {
+            color: #DC2626;
+            opacity: 0.9;
+        }
+
+        .corazon.inactivo {
+            color: #475569;
+            opacity: 0.25;
+            transform: scale(0.85);
+        }
+
+        /* SECCIÓN IZQUIERDA: OPERACIÓN */
+        .operacion-box {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--sidebar-bg);
+            border: 2px solid #334155;
+            border-radius: 16px;
+            padding: 20px;
+            height: 380px;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.4);
+        }
+
+        .operacion-texto {
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            font-weight: 800;
+            color: #F8FAFC;
+            letter-spacing: 2px;
+            font-family: 'Courier New', Courier, monospace;
+        }
+
+        /* SECCIÓN DERECHA: TECLADO Y ENTRADA */
+        .pantalla-respuesta {
+            width: 100%;
+            height: 60px;
+            background-color: #0F172A;
+            border: 2px solid var(--primary-color);
+            border-radius: 10px;
+            color: #4ADE80;
+            font-size: 2rem;
+            font-weight: bold;
+            font-family: 'Courier New', Courier, monospace;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding: 0 15px;
+            margin-bottom: 15px;
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.5);
+            overflow: hidden;
+            transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+        }
+
+        /* ESTILO PARA PANTALLA EN ERROR (ROJO SUAVE) */
+        .pantalla-respuesta.pantalla-fallo {
+            background-color: #7F1D1D !important;
+            border-color: #EF4444 !important;
+            color: #FCA5A5 !important;
+        }
+
+        .teclado-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(5, 1fr);
+            gap: 10px;
+            width: 100%;
+            height: 380px;
+        }
+
+        .btn-key {
+            background-color: var(--cell-bg);
+            color: #FFFFFF;
+            border: 2px solid #334155;
+            border-radius: 8px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            user-select: none;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+        }
+
+        .btn-key:hover {
+            background-color: var(--cell-hover);
+            transform: scale(1.03);
+            border-color: var(--primary-color);
+        }
+
+        .btn-key:active {
+            transform: scale(0.97);
+        }
+
+        .btn-vacio {
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+        .btn-borrar {
+            background-color: #D97706;
+            border-color: #B45309;
+        }
+
+        .btn-borrar:hover {
+            background-color: #B45309;
+        }
+
+        .btn-validar {
+            background-color: #16A34A;
+            border-color: #15803D;
+            grid-column: span 3;
+        }
+
+        .btn-validar:hover {
+            background-color: #15803D;
+        }
+
+        /* RESPONSIVE (IPAD Y MÓVILES) */
+        @media (max-width: 1024px) {
+            body {
+                flex-direction: column;
+            }
+
+            aside {
+                width: 100%;
+                height: auto;
+                padding: 12px 20px;
+            }
+
+            .brand {
+                margin-bottom: 10px;
+            }
+
+            .menu-label {
+                display: none;
+            }
+
+            .panel-control {
+                flex-direction: row;
+                flex-wrap: wrap;
+                justify-content: center;
+                align-items: center;
+                gap: 10px;
+            }
+
+            .stat-card {
+                padding: 6px 12px;
+                min-width: 90px;
+            }
+
+            .stat-value {
+                font-size: 1.2rem;
+            }
+
+            .btn-comenzar, .btn-salir-fullscreen {
+                width: auto;
+                margin-top: 0;
+                padding: 8px 16px;
+            }
+
+            main {
+                padding: 10px;
+            }
+
+            .game-container {
+                flex-direction: column;
+                align-items: center;
+                gap: 20px;
+                padding: 20px;
+            }
+
+            .columna-juego.derecha {
+                max-width: 100%;
+            }
+
+            .operacion-box {
+                height: 180px;
+            }
+
+            .teclado-grid {
+                height: 320px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="tiempo-barra-contenedor">
+        <div id="barraRelleno" class="tiempo-barra-relleno"></div>
+    </div>
+
+    <!-- BARRA LATERAL / MENÚ -->
+    <aside>
+        <div class="brand">
+            <svg viewBox="0 0 24 24">
+                <path d="M19,3H5C3.89,3 3,3.89 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V5C21,3.89 20.1,3 19,3M19,19H5V5H19V19M11,7H13V9H15V11H13V13H11V11H9V9H11V7M11,15H15V17H11V15Z"/>
+            </svg>
+            <h1>Mente En Forma</h1>
+        </div>
+
+        <span class="menu-label">Cálculo Mental</span>
+        
+        <div class="panel-control">
+            <button id="btn-comenzar" class="btn-comenzar">Comenzar</button>
+            
+            <div class="stat-card">
+                <span class="stat-title">NIVEL</span>
+                <span id="label-level" class="stat-value highlight">1</span>
+            </div>
+
+            <div class="stat-card">
+                <span class="stat-title">PUNTUACIÓN</span>
+                <span id="label-score" class="stat-value">0</span>
+            </div>
+
+            <div class="stat-card">
+                <span class="stat-title">MÁXIMA HISTÓRICA</span>
+                <span id="label-record" class="stat-value record">0</span>
+            </div>
+
+            <button id="btn-salir-fullscreen" class="btn-salir-fullscreen" disabled>
+                Salir Pantalla Completa
+            </button>
+        </div>
+    </aside>
+
+    <!-- ÁREA DE CONTENIDO -->
+    <main>
+        <header>
+            <h2>Cálculo Rápido</h2>
+            <p>Resuelve la operación matemática antes de que finalice el tiempo</p>
+        </header>
+
+        <div class="game-container">
+            <!-- COLUMNA IZQUIERDA: INTENTOS + OPERACIÓN -->
+            <div class="columna-juego">
+                <div class="intentos-contenedor-exterior">
+                    <span class="intentos-titulo">INTENTOS:</span>
+                    <span id="corazon-1" class="corazon activo">❤️</span>
+                    <span id="corazon-2" class="corazon activo">❤️</span>
+                </div>
+                <div class="operacion-box">
+                    <div id="label-operacion" class="operacion-texto">? + ?</div>
+                </div>
+            </div>
+
+            <!-- COLUMNA DERECHA: PANTALLA + TECLADO -->
+            <div class="columna-juego derecha">
+                <div id="pantalla-respuesta" class="pantalla-respuesta"></div>
+                
+                <div class="teclado-grid">
+                    <button class="btn-key num-key" data-val="7">7</button>
+                    <button class="btn-key num-key" data-val="8">8</button>
+                    <button class="btn-key num-key" data-val="9">9</button>
+                    
+                    <button class="btn-key num-key" data-val="4">4</button>
+                    <button class="btn-key num-key" data-val="5">5</button>
+                    <button class="btn-key num-key" data-val="6">6</button>
+                    
+                    <button class="btn-key num-key" data-val="1">1</button>
+                    <button class="btn-key num-key" data-val="2">2</button>
+                    <button class="btn-key num-key" data-val="3">3</button>
+                    
+                    <div class="btn-vacio"></div>
+                    <button class="btn-key num-key" data-val="0">0</button>
+                    <button id="btn-borrar" class="btn-key btn-borrar">⌫</button>
+                    
+                    <button id="btn-validar" class="btn-key btn-validar">Validar ✓</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- CÓDIGO JS UNIFICADO EN UN MÓDULO -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        // 1. Configuración de Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyBIMivopA82_zR5ZG96tX6jxghv9uL9tmE",
+            authDomain: "puntuacionesminijuegos.firebaseapp.com",
+            projectId: "puntuacionesminijuegos",
+            storageBucket: "puntuacionesminijuegos.firebasestorage.app",
+            messagingSenderId: "81023769064",
+            appId: "1:81023769064:web:9194299f3d24581105ec5d"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // 2. Variables del estado del juego
+        let temporizador = null;
+        let tiempoRestante = 0;
+        const TIEMPO_TOTAL_MS = 25000;
+        let nivel = 1;
+        let intentos = 2;
+        let resultadoCorrecto = 0;
+        let entradaUsuario = "";
+        let procesandoFallo = false;
+
+        // 3. Control de Pantalla Completa
+        function estaEnPantallaCompleta() {
+            return !!(document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement);
+        }
+
+        function solicitarPantallaCompleta() {
+            const elem = document.documentElement;
+            if (!estaEnPantallaCompleta()) {
+                if (elem.requestFullscreen) {
+                    elem.requestFullscreen().catch(err => console.log(err));
+                } else if (elem.webkitRequestFullscreen) {
+                    elem.webkitRequestFullscreen();
+                } else if (elem.msRequestFullscreen) {
+                    elem.msRequestFullscreen();
+                }
+            }
+        }
+
+        function salirPantallaCompleta() {
+            if (estaEnPantallaCompleta()) {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                } else if (document.webkitExitFullscreen) {
+                    document.webkitExitFullscreen();
+                } else if (document.msExitFullscreen) {
+                    document.msExitFullscreen();
+                }
+            }
+        }
+
+        function actualizarEstadoBotonFullscreen() {
+            const btnSalir = document.getElementById('btn-salir-fullscreen');
+            btnSalir.disabled = !estaEnPantallaCompleta();
+        }
+
+        ['fullscreenchange', 'webkitfullscreenchange', 'mozfullscreenchange', 'MSFullscreenChange'].forEach(event => {
+            document.addEventListener(event, actualizarEstadoBotonFullscreen);
+        });
+
+        // 4. Funciones de Firebase
+        async function cargarRecordHistorico() {
+            try {
+                const docRef = doc(db, "puntuaciones", "recordCalculos");
+                const docSnap = await getDoc(docRef);
+
+                if (docSnap.exists()) {
+                    const record = docSnap.data().puntuacion || 0;
+                    document.getElementById('label-record').textContent = record;
+                }
+            } catch (error) {
+                console.error("Error al cargar el récord de Firebase:", error);
+            }
+        }
+
+        async function guardarPuntuacion(nuevaPuntuacion) {
+            try {
+                const docRef = doc(db, "puntuaciones", "recordCalculos");
+                const docSnap = await getDoc(docRef);
+
+                let actual = 0;
+                if (docSnap.exists()) {
+                    actual = docSnap.data().puntuacion || 0;
+                }
+
+                if (nuevaPuntuacion > actual) {
+                    await setDoc(docRef, { puntuacion: nuevaPuntuacion });
+                    document.getElementById('label-record').textContent = nuevaPuntuacion;
+                }
+            } catch (error) {
+                console.error("Error al guardar en Firebase:", error);
+            }
+        }
+
+        cargarRecordHistorico();
+
+        // 5. Actualización visual de Intentos
+        function actualizarInterfazIntentos() {
+            const corazon1 = document.getElementById('corazon-1');
+            const corazon2 = document.getElementById('corazon-2');
+
+            if (intentos === 2) {
+                corazon1.className = "corazon activo";
+                corazon2.className = "corazon activo";
+            } else if (intentos === 1) {
+                corazon1.className = "corazon activo";
+                corazon2.className = "corazon inactivo";
+            } else {
+                corazon1.className = "corazon inactivo";
+                corazon2.className = "corazon inactivo";
+            }
+        }
+
+        // 6. Generador de operaciones
+        function generarOperacion() {
+            let num1, num2, operador;
+
+            let operadoresPermitidos = ["+"];
+            if (nivel >= 2) operadoresPermitidos.push("-");
+            if (nivel >= 3) operadoresPermitidos.push("×");
+            if (nivel >= 4) operadoresPermitidos.push("÷");
+
+            operador = operadoresPermitidos[Math.floor(Math.random() * operadoresPermitidos.length)];
+
+            if (operador === "+") {
+                const max = Math.min(10 + nivel * 5, 99);
+                num1 = Math.floor(Math.random() * max) + 1;
+                num2 = Math.floor(Math.random() * max) + 1;
+                resultadoCorrecto = num1 + num2;
+            } else if (operador === "-") {
+                const max = Math.min(10 + nivel * 5, 99);
+                num1 = Math.floor(Math.random() * max) + 5;
+                num2 = Math.floor(Math.random() * num1) + 1;
+                resultadoCorrecto = num1 - num2;
+            } else if (operador === "×") {
+                num1 = Math.floor(Math.random() * 8) + 2;
+                const maxNum2 = Math.floor(99 / num1);
+                num2 = Math.floor(Math.random() * (maxNum2 - 1)) + 2;
+                resultadoCorrecto = num1 * num2;
+            } else if (operador === "÷") {
+                resultadoCorrecto = Math.floor(Math.random() * 15) + 2;
+                num2 = Math.floor(Math.random() * 8) + 2;
+                num1 = resultadoCorrecto * num2;
+            }
+
+            document.getElementById('label-operacion').textContent = `${num1} ${operador} ${num2}`;
+            entradaUsuario = "";
+            actualizarPantallaRespuesta();
+        }
+
+        function actualizarPantallaRespuesta() {
+            document.getElementById('pantalla-respuesta').textContent = entradaUsuario;
+        }
+
+        function reiniciarJuego() {
+            if (temporizador) {
+                clearInterval(temporizador);
+                temporizador = null;
+            }
+            tiempoRestante = 0;
+            nivel = 1;
+            intentos = 2;
+            procesandoFallo = false;
+            
+            const pantalla = document.getElementById('pantalla-respuesta');
+            pantalla.classList.remove('pantalla-fallo');
+
+            actualizarInterfazIntentos();
+
+            document.getElementById('label-level').textContent = nivel;
+            document.getElementById('label-operacion').textContent = "? + ?";
+            entradaUsuario = "";
+            actualizarPantallaRespuesta();
+
+            const boton = document.getElementById('btn-comenzar');
+            boton.disabled = false;
+            boton.style.backgroundColor = '#28a745';
+            boton.style.cursor = 'pointer';
+        }
+
+        // 7. Avisos y alertas
+        function avisoTiempoAgotado() {
+            const puntuacionActual = parseInt(document.getElementById('label-score').textContent, 10);
+            guardarPuntuacion(puntuacionActual);
+
+            reiniciarJuego();
+
+            Swal.fire({
+                title: '¡Tiempo Agotado!',
+                text: `Se ha terminado el tiempo. Puntuación final: ${puntuacionActual}`,
+                icon: 'warning',
+                confirmButtonText: 'Aceptar'
+            });
+        }
+
+        function avisoLose() {
+            const puntuacionActual = parseInt(document.getElementById('label-score').textContent, 10);
+            guardarPuntuacion(puntuacionActual);
+
+            reiniciarJuego();
+
+            Swal.fire({
+                title: '¡Partida Finalizada!',
+                text: `Te has quedado sin intentos. Puntuación final: ${puntuacionActual}`,
+                icon: 'error',
+                confirmButtonText: 'Aceptar'
+            });
+        }
+
+        // 8. Control de la barra de tiempo
+        function iniciarBarraTiempo(tiempo) {
+            const intervaloMs = 50;
+            const barra = document.getElementById('barraRelleno');
+            tiempoRestante = tiempo;
+
+            barra.style.width = '100%';
+            barra.style.backgroundColor = '#4CAF50';
+
+            if (temporizador) clearInterval(temporizador);
+
+            temporizador = setInterval(() => {
+                tiempoRestante -= intervaloMs;
+                let porcentaje = (tiempoRestante / TIEMPO_TOTAL_MS) * 100;
+
+                if (porcentaje <= 0) {
+                    porcentaje = 0;
+                    clearInterval(temporizador);
+                    temporizador = null;
+                    avisoTiempoAgotado();
+                }
+
+                if (porcentaje > 100) porcentaje = 100;
+
+                barra.style.width = porcentaje + '%';
+
+                if (porcentaje < 25) {
+                    barra.style.backgroundColor = '#f44336';
+                } else {
+                    barra.style.backgroundColor = '#4CAF50';
+                }
+            }, intervaloMs);
+        }
+
+        // 9. Iniciar Partida
+        function comenzarJuego() {
+            solicitarPantallaCompleta();
+
+            const boton = document.getElementById('btn-comenzar');
+            boton.style.backgroundColor = '#808080';
+            boton.style.cursor = 'not-allowed';
+            boton.disabled = true;
+
+            nivel = 1;
+            intentos = 2;
+            procesandoFallo = false;
+            
+            document.getElementById('pantalla-respuesta').classList.remove('pantalla-fallo');
+            actualizarInterfazIntentos();
+
+            document.getElementById('label-level').textContent = nivel;
+            document.getElementById('label-score').textContent = '0';
+
+            generarOperacion();
+            iniciarBarraTiempo(TIEMPO_TOTAL_MS);
+        }
+
+        // 10. Lógica del Teclado y Validación
+        function agregarNumero(num) {
+            if (procesandoFallo) return;
+            if (entradaUsuario.length < 6) {
+                entradaUsuario += num;
+                actualizarPantallaRespuesta();
+            }
+        }
+
+        function borrarCaracter() {
+            if (procesandoFallo) return;
+            entradaUsuario = entradaUsuario.slice(0, -1);
+            actualizarPantallaRespuesta();
+        }
+
+        function validarRespuesta() {
+            if (entradaUsuario === "" || !temporizador || procesandoFallo) return;
+
+            const respuestaNum = parseInt(entradaUsuario, 10);
+
+            if (respuestaNum === resultadoCorrecto) {
+                const puntosGanados = 10 + (nivel - 1) * 2;
+                const scoreLabel = document.getElementById('label-score');
+                scoreLabel.textContent = parseInt(scoreLabel.textContent, 10) + puntosGanados;
+
+                nivel++;
+                document.getElementById('label-level').textContent = nivel;
+
+                // Bonificación de tiempo (+4 seg)
+                tiempoRestante += 4000;
+                if (tiempoRestante > TIEMPO_TOTAL_MS) tiempoRestante = TIEMPO_TOTAL_MS;
+
+                const Toast = Swal.mixin({
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    timer: 1000,
+                    timerProgressBar: true
+                });
+                Toast.fire({
+                    icon: 'success',
+                    title: `¡Correcto! (+${puntosGanados} pts)`
+                });
+
+                generarOperacion();
+            } else {
+                // Descontar vida en caso de fallo
+                intentos--;
+                actualizarInterfazIntentos();
+
+                const pantalla = document.getElementById('pantalla-respuesta');
+                pantalla.classList.add('pantalla-fallo');
+                procesandoFallo = true;
+
+                if (intentos > 0) {
+                    const Toast = Swal.mixin({
+                        toast: true,
+                        position: 'top-end',
+                        showConfirmButton: false,
+                        timer: 1500,
+                        timerProgressBar: true
+                    });
+                    Toast.fire({
+                        icon: 'error',
+                        title: `¡Incorrecto! Te queda ${intentos} intento`
+                    });
+
+                    // Mostrar pantalla en rojo suave durante 1 segundo
+                    setTimeout(() => {
+                        pantalla.classList.remove('pantalla-fallo');
+                        procesandoFallo = false;
+                        generarOperacion();
+                    }, 1000);
+                } else {
+                    if (temporizador) {
+                        clearInterval(temporizador);
+                        temporizador = null;
+                    }
+                    setTimeout(() => {
+                        avisoLose();
+                    }, 300);
+                }
+            }
+        }
+
+        // 11. Event Listeners
+        document.getElementById('btn-comenzar').addEventListener('click', comenzarJuego);
+        document.getElementById('btn-salir-fullscreen').addEventListener('click', salirPantallaCompleta);
+        document.getElementById('btn-borrar').addEventListener('click', borrarCaracter);
+        document.getElementById('btn-validar').addEventListener('click', validarRespuesta);
+
+        document.querySelectorAll('.num-key').forEach(btn => {
+            btn.addEventListener('click', () => {
+                agregarNumero(btn.getAttribute('data-val'));
+            });
+        });
+
+        document.addEventListener('keydown', (event) => {
+            if (!temporizador || procesandoFallo) return;
+
+            if (event.key >= '0' && event.key <= '9') {
+                agregarNumero(event.key);
+            } else if (event.key === 'Backspace') {
+                borrarCaracter();
+            } else if (event.key === 'Enter') {
+                validarRespuesta();
+            }
+        });
+    </script>
+</body>
+</html>

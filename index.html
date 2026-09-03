@@ -1,12 +1,9 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <link rel="manifest" href="manifest.json">
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Memoria Visual</title>
-  
+    <title>MenteEnForma - Ejercicios Mentales</title>
     <style>
         /* CSS RESET & VARIABLES */
         * {
@@ -17,139 +14,38 @@
         }
 
         :root {
-            --primary-color: #3B82F6;
-            --sidebar-bg: #1E293B;      /* Azul marino oscuro (Sidebar) */
-            --main-bg: #0F172A;         /* Azul marino muy oscuro (Fondo principal) */
-            --cell-bg: #1E293B;         /* Fondo celdas */
-            --cell-hover: #334155;      /* Tono al pasar el cursor */
+            --primary-color: #4A90E2;
+            --primary-dark: #357ABD;
+            --bg-color: #F4F7F6;
+            --sidebar-bg: #1E293B;
             --sidebar-text: #94A3B8;
-            --text-color: #F8FAFC;
+            --text-color: #333333;
+            --card-bg: #FFFFFF;
         }
 
         body {
             display: flex;
             height: 100vh;
-            background-color: var(--main-bg);
+            background-color: var(--bg-color);
             color: var(--text-color);
             overflow: hidden;
         }
 
-        /* BOTÓN COMENZAR */
-        .btn-comenzar {
-            background-color: #28a745;
-            color: #ffffff;
-            border: none;
-            border-radius: 20px;
-            padding: 12px 24px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            width: 100%;
-            transition: background-color 0.3s ease;
-        }
-
-        .btn-comenzar:hover {
-            background-color: #218838;
-        }
-
-        /* BOTÓN SALIR PANTALLA COMPLETA (ROJIZO) */
-        .btn-salir-fullscreen {
-            background-color: #DC2626;
-            color: #ffffff;
-            border: none;
-            border-radius: 20px;
-            padding: 10px 18px;
-            font-size: 13px;
-            font-weight: bold;
-            cursor: pointer;
-            width: 100%;
-            margin-top: 6px;
-            transition: background-color 0.3s ease, opacity 0.3s ease;
-        }
-
-        .btn-salir-fullscreen:hover:not(:disabled) {
-            background-color: #B91C1C;
-        }
-
-        .btn-salir-fullscreen:disabled {
-            background-color: #475569;
-            color: #94A3B8;
-            cursor: not-allowed;
-            opacity: 0.6;
-        }
-
-        /* TABLA DE JUEGO ADAPTABLE */
-        table {
-            table-layout: fixed;
-            border-collapse: separate;
-            border-spacing: 4px;
-            margin: 0 auto;
-            max-width: 90vw;
-            max-height: 70vh;
-        }
-
-        td, th {
-            width: clamp(28px, 5.5vw, 75px);
-            height: clamp(28px, 5.5vh, 55px);
-            background-color: var(--cell-bg);
-            color: #FFFFFF;
-            border: 2px solid #334155;
-            border-radius: 8px;
-            font-family: system-ui, -apple-system, sans-serif;
-            font-size: clamp(14px, 2.2vw, 32px);
-            font-weight: bold;
-            text-align: center;
-            vertical-align: middle;
-            transition: all 0.15s ease;
-            user-select: none;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
-        }
-
-        td:not(:empty) {
-            cursor: pointer;
-            border-color: #3B82F6;
-        }
-
-        td:not(:empty):hover {
-            background-color: var(--cell-hover);
-            transform: scale(1.03);
-            box-shadow: 0 6px 12px rgba(0,0,0,0.3);
-        }
-
-        /* BARRA SUPERIOR DE TIEMPO */
-        .tiempo-barra-contenedor {
-            width: 100%;
-            height: 15px;
-            background-color: #334155;
-            position: fixed;
-            top: 0;
-            left: 0;
-            z-index: 1000;
-        }
-
-        .tiempo-barra-relleno {
-            height: 100%;
-            width: 100%;
-            background-color: #4CAF50;
-            transition: width 0.1s linear, background-color 0.5s ease;
-        }
-
         /* BARRA LATERAL (SIDEBAR) */
         aside {
-            width: 230px;
+            width: 280px;
             background-color: var(--sidebar-bg);
             display: flex;
             flex-direction: column;
             padding: 20px;
-            box-shadow: 2px 0 10px rgba(0,0,0,0.3);
-            z-index: 10;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
         }
 
         .brand {
             display: flex;
             align-items: center;
             gap: 12px;
-            margin-bottom: 25px;
+            margin-bottom: 40px;
             color: #FFFFFF;
         }
 
@@ -172,82 +68,104 @@
             margin-bottom: 15px;
         }
 
-        /* PANEL Y TARJETAS ESTADÍSTICAS DEL MENÚ */
-        .panel-control {
+        nav ul {
+            list-style: none;
+        }
+
+        nav li {
+            margin-bottom: 10px;
+        }
+
+        nav a {
             display: flex;
-            flex-direction: column;
+            align-items: center;
             gap: 12px;
-        }
-
-        .stat-card {
-            background-color: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 12px;
-            padding: 10px 14px;
-            text-align: center;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
-            transition: transform 0.2s ease, border-color 0.2s ease;
-        }
-
-        .stat-card:hover {
-            border-color: var(--primary-color);
-            transform: translateY(-2px);
-        }
-
-        .stat-title {
-            display: block;
-            font-size: 0.68rem;
-            font-weight: 700;
+            padding: 12px 16px;
             color: var(--sidebar-text);
-            letter-spacing: 1.5px;
-            margin-bottom: 2px;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+            font-weight: 500;
         }
 
-        .stat-value {
-            font-size: 1.6rem;
-            font-weight: 800;
+        nav a:hover, nav a.active {
+            background-color: var(--primary-color);
             color: #FFFFFF;
-            font-family: 'Courier New', Courier, monospace;
-        }
-
-        .stat-value.highlight {
-            color: #4ADE80;
-        }
-
-        .stat-value.record {
-            color: #FBBF24;
         }
 
         /* CONTENIDO PRINCIPAL */
         main {
             flex: 1;
-            padding: 20px;
+            padding: 40px;
             overflow-y: auto;
-            background-color: var(--main-bg);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
         }
 
         header {
-            margin-bottom: 15px;
-            text-align: center;
+            margin-bottom: 30px;
         }
 
         header h2 {
-            font-size: 1.8rem;
-            color: #F8FAFC;
-            margin-bottom: 4px;
+            font-size: 2rem;
+            color: #1E293B;
+            margin-bottom: 8px;
         }
 
         header p {
-            color: #94A3B8;
-            font-size: 0.95rem;
+            color: #64748B;
         }
 
-        /* RESPONSIVE (IPAD / MÓVILES) */
-        @media (max-width: 1024px) {
+        /* PARRILLA DE JUEGOS */
+        .games-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .game-card {
+            display: block;
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            cursor: pointer;
+            border: 1px solid #E2E8F0;
+            text-decoration: none; /* Elimina el subrayado de la tarjeta */
+            color: inherit;         /* Mantiene el color original del texto */
+        }
+
+        .game-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        .game-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 10px;
+            background-color: #EBF5FF;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 16px;
+        }
+
+        .game-card h3 {
+            font-size: 1.1rem;
+            margin-bottom: 8px;
+            color: #1E293B;
+        }
+
+        .game-card p {
+            font-size: 0.9rem;
+            color: #64748B;
+            line-height: 1.4;
+        }
+
+        /* ADAPTABILIDAD A PANTALLAS MÁS PEQUEÑAS (iPad) */
+        @media (max-width: 768px) {
             body {
                 flex-direction: column;
             }
@@ -255,425 +173,90 @@
             aside {
                 width: 100%;
                 height: auto;
-                padding: 12px 20px;
+                padding: 15px;
             }
 
             .brand {
-                margin-bottom: 10px;
+                margin-bottom: 15px;
             }
 
-            .menu-label {
-                display: none;
-            }
-
-            .panel-control {
-                flex-direction: row;
-                flex-wrap: wrap;
-                justify-content: center;
-                align-items: center;
+            nav ul {
+                display: flex;
                 gap: 10px;
+                overflow-x: auto;
             }
 
-            .stat-card {
-                padding: 6px 12px;
-                min-width: 90px;
-            }
-
-            .stat-value {
-                font-size: 1.2rem;
-            }
-
-            .btn-comenzar, .btn-salir-fullscreen {
-                width: auto;
-                margin-top: 0;
-                padding: 8px 16px;
+            nav li {
+                margin-bottom: 0;
             }
 
             main {
-                padding: 10px;
+                padding: 20px;
             }
         }
     </style>
 </head>
 <body>
-    <dialog id="dialWin">
-        <h3>¡Atención!</h3>
-        <p>Has ganado.</p>
-        <button id="btnAceptar">Aceptar</button>
-    </dialog>
-    <dialog id="dialLose">
-        <h3>¡Atención!</h3>
-        <p>Has perdido.</p>
-        <button id="btnLAceptar">Aceptar</button>
-    </dialog>
-
-    <div class="tiempo-barra-contenedor">
-        <div id="barraRelleno" class="tiempo-barra-relleno"></div>
-    </div>
-
-    <!-- BARRA LATERAL / MENÚ REDISEÑADO -->
+    <!-- BARRA LATERAL / MENÚ -->
     <aside>
         <div class="brand">
+            <!-- Logo SVG de un cerebro con conexiones -->
             <svg viewBox="0 0 24 24">
                 <path d="M12,3A9,9 0 0,0 3,12A9,9 0 0,0 12,21A9,9 0 0,0 21,12A9,9 0 0,0 12,3M12,5A7,7 0 0,1 19,12C19,13.86 18.27,15.55 17.08,16.81L15.66,15.39C16.5,14.47 17,13.29 17,12A5,5 0 0,0 12,7A5,5 0 0,0 7,12C7,13.29 7.5,14.47 8.34,15.39L6.92,16.81C5.73,15.55 5,13.86 5,12A7,7 0 0,1 12,5M12,9A3,3 0 0,0 9,12C9,12.83 9.34,13.58 9.89,14.12L11.31,12.7C11.11,12.5 11,12.26 11,12A1,1 0 0,1 12,11A1,1 0 0,1 13,12C13,12.26 12.89,12.5 12.69,12.7L14.11,14.12C14.66,13.58 15,12.83 15,12A3,3 0 0,0 12,9Z"/>
             </svg>
             <h1>Mente En Forma</h1>
         </div>
 
-        <span class="menu-label">Memoria Visual</span>
-        
-        <div class="panel-control">
-            <button id="btn-comenzar" class="btn-comenzar">Comenzar</button>
-            
-            <!-- Tarjeta de Nivel -->
-            <div class="stat-card">
-                <span class="stat-title">NIVEL</span>
-                <span id="label-level" class="stat-value highlight">1</span>
-            </div>
-
-            <!-- Tarjeta de Marcador Actual -->
-            <div class="stat-card">
-                <span class="stat-title">PUNTUACIÓN</span>
-                <span id="label-score" class="stat-value">0</span>
-            </div>
-
-            <!-- Tarjeta de Récord Histórico -->
-            <div class="stat-card">
-                <span class="stat-title">MÁXIMA HISTÓRICA</span>
-                <span id="label-record" class="stat-value record">0</span>
-            </div>
-
-            <!-- Botón de Salir de Pantalla Completa -->
-            <button id="btn-salir-fullscreen" class="btn-salir-fullscreen" disabled>
-                Salir Pantalla Completa
-            </button>
-        </div>
+        <span class="menu-label">Ejercicios Mentales</span>
+        <nav>
+            <ul>
+                <li><a href="memoria.html">🧩 Memoria Visual</a></li>
+                <li><a href="calculos.html">⚡ Cálculo Rápido</a></li>
+                <!-- <li><a href="#">🎯 Atención / Stroop</a></li>
+                <li><a href="#">🔤 Agilidad Mental</a></li> -->
+            </ul>
+        </nav>
     </aside>
 
     <!-- ÁREA DE CONTENIDO -->
     <main>
         <header>
-            <h2>Números desordenados</h2>
-            <p>Pulsa sobre los números en orden ascendente antes de que acabe el tiempo</p>
+            <h2>Bienvenido a tu Gimnasio Mental</h2>
+            <p>Selecciona un ejercicio del menú lateral para comenzar a entrenar tus capacidades cognitivas.</p>
         </header>
 
-        <section class="ordena-numeros">
-            <table id="tbordena-numeros">
-                <script>
-                    // Generación del tablero 10x10
-                    document.write(Array.from({length: 10}, (_, r) => 
-                        `<tr>${Array.from({length: 10}, (_, c) => 
-                            `<td id="cell-${r * 10 + c}"></td>`
-                        ).join('')}</tr>`
-                    ).join(''));
-                </script>
-            </table>
+        <section class="games-grid">
+            
+            <!-- Tarjeta Juego 1 -->
+            <a href="memoria.html" class="game-card">
+                <div class="game-icon">🧩</div>
+                <h3>Memoria Visual</h3>
+                <p>Memoriza la posición de las tarjetas y encuentra todas las parejas en el menor tiempo posible.</p>
+            </a>
+
+            <!-- Tarjeta Juego 2 -->
+            <a href="calculos.html" class="game-card">
+                <div class="game-icon">⚡</div>
+                <h3>Cálculo Rápido</h3>
+                <p>Resuelve la mayor cantidad de operaciones matemáticas sencillas antes de que se agote el tiempo.</p>
+            </a>
+
+            <!-- Tarjeta Juego 3
+            <a href="#" class="game-card">
+                <div class="game-icon">🎯</div>
+                <h3>Test Stroop (Atención)</h3>
+                <p>Entrena tu concentración identificando el color del texto, no la palabra escrita.</p>
+            </a>
+
+            <-- Tarjeta Juego 4 
+            <a href="#" class="game-card">
+                <div class="game-icon">🔤</div>
+                <h3>Anagromas y Palabras</h3>
+                <p>Forma palabras válidas ordenando las letras desordenadas lo más rápido que puedas.</p>
+            </a> -->
+
         </section>
     </main>
 
-    <!-- CÓDIGO JS UNIFICADO EN UN MÓDULO -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-
-        // 1. Configuración de Firebase
-        const firebaseConfig = {
-            apiKey: "AIzaSyBIMivopA82_zR5ZG96tX6jxghv9uL9tmE",
-            authDomain: "puntuacionesminijuegos.firebaseapp.com",
-            projectId: "puntuacionesminijuegos",
-            storageBucket: "puntuacionesminijuegos.firebasestorage.app",
-            messagingSenderId: "81023769064",
-            appId: "1:81023769064:web:9194299f3d24581105ec5d"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-
-        // 2. Variables de estado del juego
-        const enterosAleatorios = [];
-        const celdasNumeros = [];
-        let temporizador = null;
-        let tiempoRestante = 0;
-        const TIEMPO_TOTAL_MS = 20000;
-        let cantidadNumeros = 5;
-
-        // 3. Funciones para Pantalla Completa
-        function estaEnPantallaCompleta() {
-            return !!(document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement);
-        }
-
-        function solicitarPantallaCompleta() {
-            const elem = document.documentElement;
-            if (!estaEnPantallaCompleta()) {
-                if (elem.requestFullscreen) {
-                    elem.requestFullscreen().catch(err => console.log(err));
-                } else if (elem.webkitRequestFullscreen) {
-                    elem.webkitRequestFullscreen();
-                } else if (elem.msRequestFullscreen) {
-                    elem.msRequestFullscreen();
-                }
-            }
-        }
-
-        function salirPantallaCompleta() {
-            if (estaEnPantallaCompleta()) {
-                if (document.exitFullscreen) {
-                    document.exitFullscreen();
-                } else if (document.webkitExitFullscreen) {
-                    document.webkitExitFullscreen();
-                } else if (document.msExitFullscreen) {
-                    document.msExitFullscreen();
-                }
-            }
-        }
-
-        function actualizarEstadoBotonFullscreen() {
-            const btnSalir = document.getElementById('btn-salir-fullscreen');
-            btnSalir.disabled = !estaEnPantallaCompleta();
-        }
-
-        ['fullscreenchange', 'webkitfullscreenchange', 'mozfullscreenchange', 'MSFullscreenChange'].forEach(event => {
-            document.addEventListener(event, actualizarEstadoBotonFullscreen);
-        });
-
-        // 4. Funciones de Firebase
-        async function cargarRecordHistorico() {
-            try {
-                const docRef = doc(db, "puntuaciones", "recordGlobal");
-                const docSnap = await getDoc(docRef);
-
-                if (docSnap.exists()) {
-                    const record = docSnap.data().puntuacion || 0;
-                    document.getElementById('label-record').textContent = record;
-                }
-            } catch (error) {
-                console.error("Error al cargar el récord de Firebase:", error);
-            }
-        }
-
-        async function guardarPuntuacion(nuevaPuntuacion) {
-            try {
-                const docRef = doc(db, "puntuaciones", "recordGlobal");
-                const docSnap = await getDoc(docRef);
-
-                let actual = 0;
-                if (docSnap.exists()) {
-                    actual = docSnap.data().puntuacion || 0;
-                }
-
-                if (nuevaPuntuacion > actual) {
-                    await setDoc(docRef, { puntuacion: nuevaPuntuacion });
-                    document.getElementById('label-record').textContent = nuevaPuntuacion;
-                    console.log("¡Nuevo récord guardado con éxito!");
-                }
-            } catch (error) {
-                console.error("Error al guardar en Firebase:", error);
-            }
-        }
-
-        cargarRecordHistorico();
-
-        // 5. Funciones de limpieza e interfaz
-        function limpiarTablero() {
-            for (let i = 0; i < 100; i++) {
-                const celda = document.getElementById(`cell-${i}`);
-                if (celda) celda.textContent = "";
-            }
-        }
-
-        function actualizarNivelUI() {
-            const nivelActual = cantidadNumeros - 4;
-            document.getElementById('label-level').textContent = nivelActual;
-        }
-
-        function reiniciarJuego() {
-            if (temporizador) {
-                clearInterval(temporizador);
-                temporizador = null;
-            }
-            tiempoRestante = 0;
-
-            limpiarTablero();
-            cantidadNumeros = 5;
-            actualizarNivelUI();
-
-            const boton = document.getElementById('btn-comenzar');
-            boton.disabled = false;
-            boton.style.backgroundColor = '#28a745';
-            boton.style.cursor = 'pointer';
-        }
-
-        // 6. Avisos y alertas de fin de partida
-        function avisoTiempoAgotado() {
-            const puntuacionActual = parseInt(document.getElementById('label-score').textContent, 10);
-            guardarPuntuacion(puntuacionActual);
-
-            reiniciarJuego();
-
-            Swal.fire({
-                title: '¡Tiempo Agotado!',
-                text: `Se ha terminado el tiempo de la partida. Puntuación final: ${puntuacionActual}`,
-                icon: 'warning',
-                confirmButtonText: 'Aceptar'
-            });
-        }
-
-        function avisoLose(numeroCorrecto) {
-            const puntuacionActual = parseInt(document.getElementById('label-score').textContent, 10);
-            guardarPuntuacion(puntuacionActual);
-
-            reiniciarJuego();
-
-            Swal.fire({
-                title: '¡Has perdido!',
-                text: `El número correcto era el ${numeroCorrecto}. Puntuación final: ${puntuacionActual}`,
-                icon: 'error',
-                confirmButtonText: 'Aceptar'
-            });
-        }
-
-        // 7. Control de la barra de tiempo
-        function iniciarBarraTiempo(tiempo) {
-            const intervaloMs = 50;
-            const barra = document.getElementById('barraRelleno');
-            tiempoRestante = tiempo;
-
-            barra.style.width = '100%';
-            barra.style.backgroundColor = '#4CAF50';
-
-            if (temporizador) clearInterval(temporizador);
-
-            temporizador = setInterval(() => {
-                const nivelActual = cantidadNumeros - 4;
-                const velocidadConsumo = intervaloMs * (1 + (nivelActual - 1) * 0.05);
-
-                tiempoRestante -= velocidadConsumo;
-                let porcentaje = (tiempoRestante / TIEMPO_TOTAL_MS) * 100;
-
-                if (porcentaje <= 0) {
-                    porcentaje = 0;
-                    clearInterval(temporizador);
-                    temporizador = null;
-                    avisoTiempoAgotado();
-                }
-
-                if (porcentaje > 100) porcentaje = 100;
-
-                barra.style.width = porcentaje + '%';
-
-                if (porcentaje < 25) {
-                    barra.style.backgroundColor = '#f44336';
-                } else {
-                    barra.style.backgroundColor = '#4CAF50';
-                }
-            }, intervaloMs);
-        }
-
-        // 8. Generar nuevo nivel
-        function rellenatabla() {
-            solicitarPantallaCompleta();
-
-            const boton = document.getElementById('btn-comenzar');
-            boton.style.backgroundColor = '#808080';
-            boton.style.cursor = 'not-allowed';
-            boton.disabled = true;
-
-            enterosAleatorios.length = 0;
-            celdasNumeros.length = 0;
-            limpiarTablero();
-
-            const min = 0;
-            const max = 99;
-
-            while (celdasNumeros.length < cantidadNumeros) {
-                const numero = Math.floor(Math.random() * (max - min + 1)) + min;
-                if (!celdasNumeros.includes(numero)) celdasNumeros.push(numero);
-            }
-
-            while (enterosAleatorios.length < cantidadNumeros) {
-                const numero = Math.floor(Math.random() * (max - min + 1)) + min;
-                if (!enterosAleatorios.includes(numero)) enterosAleatorios.push(numero);
-            }
-
-            for (let i = 0; i < cantidadNumeros; i++) {
-                document.getElementById("cell-" + celdasNumeros[i]).textContent = enterosAleatorios[i];
-            }
-
-            enterosAleatorios.sort((a, b) => a - b);
-
-            if (!temporizador || tiempoRestante <= 0) {
-                document.getElementById('label-score').textContent = '0';
-                iniciarBarraTiempo(TIEMPO_TOTAL_MS);
-            }
-        }
-
-        // 9. Lógica de pulsación de celdas
-        function procesarCelda(celdaPulsada) {
-            if (celdaPulsada.textContent !== "") {
-                const valorCelda = parseInt(celdaPulsada.textContent, 10);
-                const numeroCorrecto = enterosAleatorios[0];
-
-                if (valorCelda === numeroCorrecto) {
-                    celdaPulsada.textContent = "";
-                    enterosAleatorios.shift();
-
-                    const nivelActual = cantidadNumeros - 4;
-                    const puntosPorAcierto = 10 + (nivelActual - 1) * 2;
-
-                    const scoreLabel = document.getElementById('label-score');
-                    scoreLabel.textContent = parseInt(scoreLabel.textContent, 10) + puntosPorAcierto;
-
-                    tiempoRestante += 2000;
-                    if (tiempoRestante > TIEMPO_TOTAL_MS) tiempoRestante = TIEMPO_TOTAL_MS;
-
-                    if (enterosAleatorios.length === 0) {
-                        cantidadNumeros++;
-                        actualizarNivelUI();
-
-                        tiempoRestante += 5000;
-                        if (tiempoRestante > TIEMPO_TOTAL_MS) tiempoRestante = TIEMPO_TOTAL_MS;
-
-                        const Toast = Swal.mixin({
-                            toast: true,
-                            position: 'top-end',
-                            showConfirmButton: false,
-                            timer: 1000,
-                            timerProgressBar: true
-                        });
-                        Toast.fire({
-                            icon: 'success',
-                            title: `¡Nivel superado! Nivel ${cantidadNumeros - 4} (+${10 + (cantidadNumeros - 5) * 2} pts/acierto)`
-                        });
-
-                        rellenatabla();
-                    }
-                } else {
-                    if (temporizador) {
-                        clearInterval(temporizador);
-                        temporizador = null;
-                    }
-                    avisoLose(numeroCorrecto);
-                }
-            }
-        }
-
-        // 10. Asignación de Event Listeners
-        document.getElementById('btn-comenzar').addEventListener('click', rellenatabla);
-        document.getElementById('btn-salir-fullscreen').addEventListener('click', salirPantallaCompleta);
-
-        document.getElementById('tbordena-numeros').addEventListener('click', (event) => {
-            if (event.target.tagName === 'TD') {
-                procesarCelda(event.target);
-            }
-        });
-
-        document.getElementById('btnAceptar').addEventListener('click', () => {
-            document.getElementById('dialWin').close();
-        });
-
-        document.getElementById('btnLAceptar').addEventListener('click', () => {
-            document.getElementById('dialLose').close();
-        });
-    </script>
 </body>
 </html>
