@@ -84,19 +84,19 @@
             border-collapse: separate;
             border-spacing: 4px;
             margin: 0 auto;
-            max-width: 90vw;
-            max-height: 70vh;
+            max-width: 95vw;
+            max-height: 85vh;
         }
 
         td, th {
-            width: clamp(28px, 5.5vw, 75px);
-            height: clamp(28px, 5.5vh, 55px);
+            width: clamp(32px, 6.5vw, 75px);
+            height: clamp(32px, 6.5vh, 65px);
             background-color: var(--cell-bg);
             color: #FFFFFF;
             border: 2px solid #334155;
             border-radius: 8px;
             font-family: system-ui, -apple-system, sans-serif;
-            font-size: clamp(14px, 2.2vw, 32px);
+            font-size: clamp(16px, 2.8vw, 32px);
             font-weight: bold;
             text-align: center;
             vertical-align: middle;
@@ -246,8 +246,41 @@
             font-size: 0.95rem;
         }
 
-        /* RESPONSIVE (IPAD / MÓVILES) */
+        /* IPAD / TABLETS (Mantiene la barra lateral a la izquierda) */
         @media (max-width: 1024px) {
+            body {
+                flex-direction: row;
+            }
+
+            aside {
+                width: 190px;
+                padding: 15px 12px;
+            }
+
+            .brand h1 {
+                font-size: 1.1rem;
+            }
+
+            .brand svg {
+                width: 32px;
+                height: 32px;
+            }
+
+            .stat-card {
+                padding: 8px;
+            }
+
+            .stat-value {
+                font-size: 1.3rem;
+            }
+
+            main {
+                padding: 10px;
+            }
+        }
+
+        /* MÓVILES (Pasa la barra a la parte superior solo en pantallas muy pequeñas) */
+        @media (max-width: 600px) {
             body {
                 flex-direction: column;
             }
@@ -255,11 +288,11 @@
             aside {
                 width: 100%;
                 height: auto;
-                padding: 12px 20px;
+                padding: 12px 15px;
             }
 
             .brand {
-                margin-bottom: 10px;
+                margin-bottom: 8px;
             }
 
             .menu-label {
@@ -271,26 +304,28 @@
                 flex-wrap: wrap;
                 justify-content: center;
                 align-items: center;
-                gap: 10px;
+                gap: 8px;
             }
 
             .stat-card {
-                padding: 6px 12px;
-                min-width: 90px;
+                padding: 6px 10px;
+                min-width: 80px;
             }
 
             .stat-value {
-                font-size: 1.2rem;
+                font-size: 1.1rem;
             }
 
             .btn-comenzar, .btn-salir-fullscreen {
                 width: auto;
                 margin-top: 0;
-                padding: 8px 16px;
+                padding: 8px 14px;
             }
 
-            main {
-                padding: 10px;
+            td, th {
+                width: clamp(26px, 8.5vw, 45px);
+                height: clamp(26px, 8.5vw, 45px);
+                font-size: clamp(12px, 3.8vw, 20px);
             }
         }
     </style>

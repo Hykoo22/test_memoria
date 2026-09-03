@@ -193,7 +193,7 @@
         }
 
         header {
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             text-align: center;
         }
 
@@ -214,13 +214,13 @@
             flex-direction: row;
             align-items: flex-end;
             justify-content: center;
-            gap: 40px;
+            gap: 30px;
             width: 100%;
             max-width: 900px;
             background-color: rgba(255, 255, 255, 0.02);
             border: 1px solid rgba(255, 255, 255, 0.05);
             border-radius: 16px;
-            padding: 30px;
+            padding: 25px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.3);
         }
 
@@ -238,7 +238,7 @@
 
         /* CABECERA EXTERIOR DE INTENTOS */
         .intentos-contenedor-exterior {
-            height: 60px;
+            height: 50px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -259,7 +259,7 @@
         }
 
         .corazon {
-            font-size: 1.6rem;
+            font-size: 1.5rem;
             transition: all 0.3s ease;
         }
 
@@ -283,12 +283,12 @@
             border: 2px solid #334155;
             border-radius: 16px;
             padding: 20px;
-            height: 380px;
+            height: clamp(220px, 35vh, 350px);
             box-shadow: inset 0 2px 4px rgba(0,0,0,0.4);
         }
 
         .operacion-texto {
-            font-size: clamp(2.5rem, 5vw, 4rem);
+            font-size: clamp(2.2rem, 4.5vw, 3.8rem);
             font-weight: 800;
             color: #F8FAFC;
             letter-spacing: 2px;
@@ -298,12 +298,12 @@
         /* SECCIÓN DERECHA: TECLADO Y ENTRADA */
         .pantalla-respuesta {
             width: 100%;
-            height: 60px;
+            height: 50px;
             background-color: #0F172A;
             border: 2px solid var(--primary-color);
             border-radius: 10px;
             color: #4ADE80;
-            font-size: 2rem;
+            font-size: 1.8rem;
             font-weight: bold;
             font-family: 'Courier New', Courier, monospace;
             display: flex;
@@ -327,9 +327,9 @@
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             grid-template-rows: repeat(5, 1fr);
-            gap: 10px;
+            gap: 8px;
             width: 100%;
-            height: 380px;
+            height: clamp(220px, 35vh, 350px);
         }
 
         .btn-key {
@@ -337,7 +337,7 @@
             color: #FFFFFF;
             border: 2px solid #334155;
             border-radius: 8px;
-            font-size: 1.5rem;
+            font-size: clamp(1.2rem, 2.5vw, 1.5rem);
             font-weight: bold;
             cursor: pointer;
             transition: all 0.15s ease;
@@ -384,8 +384,46 @@
             background-color: #15803D;
         }
 
-        /* RESPONSIVE (IPAD Y MÓVILES) */
+        /* RESPONSIVE IPAD Y TABLETS (Barra lateral a la izquierda) */
         @media (max-width: 1024px) {
+            body {
+                flex-direction: row;
+            }
+
+            aside {
+                width: 190px;
+                padding: 15px 12px;
+            }
+
+            .brand h1 {
+                font-size: 1.1rem;
+            }
+
+            .brand svg {
+                width: 32px;
+                height: 32px;
+            }
+
+            .stat-card {
+                padding: 8px;
+            }
+
+            .stat-value {
+                font-size: 1.3rem;
+            }
+
+            main {
+                padding: 10px;
+            }
+
+            .game-container {
+                gap: 20px;
+                padding: 15px;
+            }
+        }
+
+        /* RESPONSIVE MÓVILES (Barra lateral arriba) */
+        @media (max-width: 600px) {
             body {
                 flex-direction: column;
             }
@@ -393,11 +431,11 @@
             aside {
                 width: 100%;
                 height: auto;
-                padding: 12px 20px;
+                padding: 10px 15px;
             }
 
             .brand {
-                margin-bottom: 10px;
+                margin-bottom: 8px;
             }
 
             .menu-label {
@@ -409,33 +447,29 @@
                 flex-wrap: wrap;
                 justify-content: center;
                 align-items: center;
-                gap: 10px;
+                gap: 8px;
             }
 
             .stat-card {
-                padding: 6px 12px;
-                min-width: 90px;
+                padding: 6px 10px;
+                min-width: 80px;
             }
 
             .stat-value {
-                font-size: 1.2rem;
+                font-size: 1.1rem;
             }
 
             .btn-comenzar, .btn-salir-fullscreen {
                 width: auto;
                 margin-top: 0;
-                padding: 8px 16px;
-            }
-
-            main {
-                padding: 10px;
+                padding: 8px 14px;
             }
 
             .game-container {
                 flex-direction: column;
                 align-items: center;
-                gap: 20px;
-                padding: 20px;
+                gap: 15px;
+                padding: 15px;
             }
 
             .columna-juego.derecha {
@@ -443,11 +477,11 @@
             }
 
             .operacion-box {
-                height: 180px;
+                height: 120px;
             }
 
             .teclado-grid {
-                height: 320px;
+                height: 240px;
             }
         }
     </style>
