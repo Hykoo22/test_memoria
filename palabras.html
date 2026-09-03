@@ -208,7 +208,7 @@
             font-size: 0.95rem;
         }
 
-        /* ÁREA DE JUEGO REESTRUCTURADA EN VERTICAL */
+        /* ÁREA DE JUEGO */
         .game-container {
             display: flex;
             flex-direction: column;
@@ -224,9 +224,18 @@
             box-shadow: 0 10px 25px rgba(0,0,0,0.3);
         }
 
-        /* INTENTOS CENTRADOS ARRIBA */
-        .intentos-contenedor-exterior {
-            height: 45px;
+        /* PANEL SUPERIOR DE CONTROLES: INTENTOS Y COMODINES */
+        .paneles-superiores {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            flex-wrap: wrap;
+        }
+
+        .intentos-contenedor-exterior, .comodines-contenedor-exterior {
+            height: 55px;
             padding: 0 20px;
             display: flex;
             align-items: center;
@@ -234,12 +243,12 @@
             gap: 12px;
             background-color: var(--sidebar-bg);
             border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 10px;
+            border-radius: 12px;
             box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
         }
 
-        .intentos-titulo {
-            font-size: 0.9rem;
+        .intentos-titulo, .comodines-titulo {
+            font-size: 0.85rem;
             font-weight: 700;
             color: #CBD5E1;
             letter-spacing: 1.5px;
@@ -259,6 +268,45 @@
             color: #475569;
             opacity: 0.25;
             transform: scale(0.85);
+        }
+
+        /* ESTILOS CON RELIEVE Y EFECTO BOTÓN PARA LOS COMODINES */
+        .btn-comodin {
+            background: linear-gradient(145deg, #334155, #1e293b);
+            border: 1px solid #475569;
+            border-radius: 10px;
+            width: 38px;
+            height: 38px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            cursor: pointer;
+            box-shadow: 0 4px 0 #0f172a, 0 5px 8px rgba(0,0,0,0.4);
+            transition: all 0.15s ease;
+            user-select: none;
+        }
+
+        .btn-comodin:hover:not(:disabled) {
+            transform: translateY(-2px);
+            background: linear-gradient(145deg, #475569, #334155);
+            border-color: #FBBF24;
+            box-shadow: 0 6px 0 #0f172a, 0 8px 12px rgba(251, 191, 36, 0.2);
+        }
+
+        .btn-comodin:active:not(:disabled) {
+            transform: translateY(2px);
+            box-shadow: 0 2px 0 #0f172a, 0 3px 4px rgba(0,0,0,0.3);
+        }
+
+        .btn-comodin:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+            filter: grayscale(100%);
+            box-shadow: none;
+            background: #1e293b;
+            border-color: #334155;
+            transform: none;
         }
 
         /* SECCIÓN SUPERIOR CON PALABRA Y RESPUESTA AL LADO */
@@ -301,7 +349,7 @@
             border: 2px solid var(--primary-color);
             border-radius: 12px;
             color: #4ADE80;
-            font-size: clamp(2rem, 3.5vw, 3.2rem);
+            font-size: clamp(1.8rem, 3.2vw, 3rem);
             font-weight: bold;
             font-family: 'Courier New', Courier, monospace;
             display: flex;
@@ -311,18 +359,16 @@
             box-shadow: inset 0 2px 5px rgba(0,0,0,0.5);
             overflow: hidden;
             text-transform: uppercase;
-            letter-spacing: 4px;
+            letter-spacing: 8px;
             transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
         }
 
-        /* ESTADO DE FALLO (ROJO) */
         .box-pantalla-respuesta.pantalla-fallo {
             background-color: #7F1D1D !important;
             border-color: #EF4444 !important;
             color: #FCA5A5 !important;
         }
 
-        /* ESTADO DE ACIERTO (VERDE) */
         .box-pantalla-respuesta.pantalla-acierto {
             background-color: #14532D !important;
             border-color: #22C55E !important;
@@ -511,12 +557,24 @@
         </header>
 
         <div class="game-container">
-            <div class="intentos-contenedor-exterior">
-                <span class="intentos-titulo">INTENTOS:</span>
-                <span id="corazon-1" class="corazon activo">❤️</span>
-                <span id="corazon-2" class="corazon activo">❤️</span>
+            <!-- PANELES SUPERIORES: INTENTOS Y COMODINES -->
+            <div class="paneles-superiores">
+                <div class="intentos-contenedor-exterior">
+                    <span class="intentos-titulo">INTENTOS:</span>
+                    <span id="corazon-1" class="corazon activo">❤️</span>
+                    <span id="corazon-2" class="corazon activo">❤️</span>
+                    <span id="corazon-3" class="corazon activo">❤️</span>
+                </div>
+
+                <div class="comodines-contenedor-exterior">
+                    <span class="comodines-titulo">PISTAS:</span>
+                    <button id="comodin-1" class="btn-comodin" title="Revelar letra">💡</button>
+                    <button id="comodin-2" class="btn-comodin" title="Revelar letra">💡</button>
+                    <button id="comodin-3" class="btn-comodin" title="Revelar letra">💡</button>
+                </div>
             </div>
 
+            <!-- FILA SUPERIOR: PALABRA DESORDENADA Y GUIONES/RESPUESTA -->
             <div class="seccion-palabras">
                 <div class="box-palabra-desordenada">
                     <div id="label-operacion" class="operacion-texto">PALABRA</div>
@@ -524,14 +582,15 @@
                 <div id="pantalla-respuesta" class="box-pantalla-respuesta"></div>
             </div>
 
+            <!-- FILA INFERIOR: TECLADO -->
             <div id="teclado" class="teclado-qwerty-container"></div>
         </div>
     </main>
 
-    <!-- JS MÓDULO CON FIREBASE Y API EXTERNA -->
+    <!-- JS MÓDULO CON FIREBASE -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, doc, getDoc, setDoc, updateDoc, arrayUnion } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyBIMivopA82_zR5ZG96tX6jxghv9uL9tmE",
@@ -545,7 +604,7 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // BANCO DE PALABRAS DE RESPALDO (FALLBACK EN CASO DE SIN CONEXIÓN)
+        // BANCO LOCAL DE RESPALDO
         const DICCIONARIO_LOCAL = {
             cortas: ["CASA", "GATO", "PERRO", "MESA", "SOLAR", "LAGO", "NUBE", "FLOR", "PADRE", "MADRE", "LIBRO", "ARBOL"],
             medianas: ["CAMINO", "CIUDAD", "TIEMPO", "PINTURA", "CABEZA", "CAMISA", "BLANCO", "MUSICA", "MADERA", "VERANO"],
@@ -557,9 +616,17 @@
         let tiempoRestante = 0;
         const TIEMPO_TOTAL_MS = 45000;
         let nivel = 1;
-        let intentos = 2;
+        let intentos = 3;
+        let comodinesRestantes = 3;
         let palabraCorrecta = "";
-        let entradaUsuario = "";
+        
+        // Control de sesión y palabras jugadas en Firebase
+        let idSesionJuego = null;
+        let palabrasJugadasPartida = [];
+
+        // Arreglos de control para casillas fijas y comodines
+        let casillasUsuario = []; 
+        let casillasFijas = []; 
         let procesandoEstado = false;
 
         function construirTeclado() {
@@ -640,7 +707,7 @@
             document.addEventListener(e, actualizarEstadoBotonFullscreen);
         });
 
-        // FIREBASE
+        // FIREBASE: GESTIÓN DE RÉCORD Y SESIÓN DE PALABRAS JUGADAS
         async function cargarRecordHistorico() {
             try {
                 const docRef = doc(db, "puntuaciones", "recordAnagramas");
@@ -669,21 +736,53 @@
             }
         }
 
+        async function iniciarSesionFirebase() {
+            idSesionJuego = "partida_" + Date.now();
+            palabrasJugadasPartida = [];
+            try {
+                const docRef = doc(db, "sesiones_juego", idSesionJuego);
+                await setDoc(docRef, {
+                    creada: new Date().toISOString(),
+                    palabrasUsadas: []
+                });
+            } catch (e) {
+                console.warn("No se pudo iniciar la sesión en Firestore:", e);
+            }
+        }
+
+        async function registrarPalabraEnFirebase(palabra) {
+            palabrasJugadasPartida.push(palabra);
+            if (!idSesionJuego) return;
+            try {
+                const docRef = doc(db, "sesiones_juego", idSesionJuego);
+                await updateDoc(docRef, {
+                    palabrasUsadas: arrayUnion(palabra)
+                });
+            } catch (e) {
+                console.warn("No se pudo actualizar el registro de palabras en Firestore:", e);
+            }
+        }
+
         cargarRecordHistorico();
 
         function actualizarInterfazIntentos() {
             const c1 = document.getElementById('corazon-1');
             const c2 = document.getElementById('corazon-2');
+            const c3 = document.getElementById('corazon-3');
 
-            if (intentos === 2) {
-                c1.className = "corazon activo";
-                c2.className = "corazon activo";
-            } else if (intentos === 1) {
-                c1.className = "corazon activo";
-                c2.className = "corazon inactivo";
-            } else {
-                c1.className = "corazon inactivo";
-                c2.className = "corazon inactivo";
+            c1.className = intentos >= 1 ? "corazon activo" : "corazon inactivo";
+            c2.className = intentos >= 2 ? "corazon activo" : "corazon inactivo";
+            c3.className = intentos >= 3 ? "corazon activo" : "corazon inactivo";
+        }
+
+        function actualizarInterfazComodines() {
+            for (let i = 1; i <= 3; i++) {
+                const btnComodin = document.getElementById(`comodin-${i}`);
+                if (i <= comodinesRestantes) {
+                    btnComodin.disabled = false;
+                } else {
+                    btnComodin.disabled = true;
+                }
             }
         }
 
@@ -701,7 +800,6 @@
             return mezclada;
         }
 
-        // OBTENCIÓN DINÁMICA DE PALABRAS DE API EXTERNA CON FALLBACK
         async function obtenerPalabraAleatoria() {
             let minLongitud = 4, maxLongitud = 5;
             let categoriaLocal = "cortas";
@@ -710,24 +808,38 @@
             if (nivel >= 6 && nivel < 9) { minLongitud = 7; maxLongitud = 8; categoriaLocal = "largas"; }
             if (nivel >= 9) { minLongitud = 9; maxLongitud = 12; categoriaLocal = "muyLargas"; }
 
-            try {
-                const response = await fetch(`https://rae-api.com/api/words/random?min=${minLongitud}&max=${maxLongitud}`);
-                if (response.ok) {
-                    const data = await response.json();
-                    let palabraAPI = (data.word || data.palabra || "").toUpperCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-                    
-                    // Asegurar que solo contiene letras A-Z (sin caracteres raros)
-                    if (/^[A-ZÑ]+$/.test(palabraAPI)) {
-                        return palabraAPI;
+            let palabraCandidata = "";
+            let intentosSeleccion = 0;
+
+            while (intentosSeleccion < 10) {
+                intentosSeleccion++;
+                try {
+                    const response = await fetch(`https://rae-api.com/api/words/random?min=${minLongitud}&max=${maxLongitud}`);
+                    if (response.ok) {
+                        const data = await response.json();
+                        let palabraAPI = (data.word || data.palabra || "").toUpperCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+                        if (/^[A-ZÑ]+$/.test(palabraAPI) && !palabrasJugadasPartida.includes(palabraAPI)) {
+                            palabraCandidata = palabraAPI;
+                            break;
+                        }
                     }
+                } catch (e) {
+                    console.warn("API no disponible, usando respaldo local:", e);
                 }
-            } catch (e) {
-                console.warn("API de palabras no disponible, usando respaldo local:", e);
+
+                const listaLocal = DICCIONARIO_LOCAL[categoriaLocal];
+                const sinRepetir = listaLocal.filter(p => !palabrasJugadasPartida.includes(p));
+                
+                if (sinRepetir.length > 0) {
+                    palabraCandidata = sinRepetir[Math.floor(Math.random() * sinRepetir.length)];
+                } else {
+                    palabraCandidata = listaLocal[Math.floor(Math.random() * listaLocal.length)];
+                }
+                break;
             }
 
-            // Fallback si falla la API
-            const listaLocal = DICCIONARIO_LOCAL[categoriaLocal];
-            return listaLocal[Math.floor(Math.random() * listaLocal.length)];
+            await registrarPalabraEnFirebase(palabraCandidata);
+            return palabraCandidata;
         }
 
         async function generarOperacion() {
@@ -737,14 +849,73 @@
             const palabraDesordenada = desordenarPalabra(palabraCorrecta);
             document.getElementById('label-operacion').textContent = palabraDesordenada;
             
-            entradaUsuario = "";
-            intentos = 2;
+            // Inicializar casillas vacías con "_"
+            casillasUsuario = new Array(palabraCorrecta.length).fill("_");
+            casillasFijas = new Array(palabraCorrecta.length).fill(false);
+            
+            intentos = 3;
             actualizarInterfazIntentos();
             actualizarPantallaRespuesta();
         }
 
         function actualizarPantallaRespuesta() {
-            document.getElementById('pantalla-respuesta').textContent = entradaUsuario;
+            document.getElementById('pantalla-respuesta').textContent = casillasUsuario.join(" ");
+        }
+
+        function usarComodin() {
+            if (comodinesRestantes <= 0 || !temporizador || procesandoEstado) return;
+
+            let posAInsertar = -1;
+            for (let i = 0; i < palabraCorrecta.length; i++) {
+                if (!casillasFijas[i]) {
+                    posAInsertar = i;
+                    break;
+                }
+            }
+
+            if (posAInsertar !== -1) {
+                casillasUsuario[posAInsertar] = palabraCorrecta[posAInsertar];
+                casillasFijas[posAInsertar] = true;
+                comodinesRestantes--;
+                
+                actualizarInterfazComodines();
+                actualizarPantallaRespuesta();
+
+                const Toast = Swal.mixin({
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    timer: 1000
+                });
+                Toast.fire({
+                    icon: 'info',
+                    title: `¡Pista activada! Letra: ${palabraCorrecta[posAInsertar]}`
+                });
+            }
+        }
+
+        function agregarLetra(letra) {
+            if (procesandoEstado) return;
+            
+            for (let i = 0; i < casillasUsuario.length; i++) {
+                if (!casillasFijas[i] && casillasUsuario[i] === "_") {
+                    casillasUsuario[i] = letra.toUpperCase();
+                    actualizarPantallaRespuesta();
+                    break;
+                }
+            }
+        }
+
+        function borrarCaracter() {
+            if (procesandoEstado) return;
+
+            for (let i = casillasUsuario.length - 1; i >= 0; i--) {
+                if (!casillasFijas[i] && casillasUsuario[i] !== "_") {
+                    casillasUsuario[i] = "_";
+                    actualizarPantallaRespuesta();
+                    break;
+                }
+            }
         }
 
         function reiniciarJuego() {
@@ -754,16 +925,22 @@
             }
             tiempoRestante = 0;
             nivel = 1;
-            intentos = 2;
+            intentos = 3;
+            comodinesRestantes = 3;
             procesandoEstado = false;
+            idSesionJuego = null;
+            palabrasJugadasPartida = [];
 
             const pantalla = document.getElementById('pantalla-respuesta');
             pantalla.classList.remove('pantalla-fallo', 'pantalla-acierto');
             
             actualizarInterfazIntentos();
+            actualizarInterfazComodines();
+            
             document.getElementById('label-level').textContent = nivel;
             document.getElementById('label-operacion').textContent = "PALABRA";
-            entradaUsuario = "";
+            casillasUsuario = [];
+            casillasFijas = [];
             actualizarPantallaRespuesta();
 
             const boton = document.getElementById('btn-comenzar');
@@ -774,12 +951,13 @@
 
         function avisoTiempoAgotado() {
             const puntuacionActual = parseInt(document.getElementById('label-score').textContent, 10);
+            const palabraBuscada = palabraCorrecta;
             guardarPuntuacion(puntuacionActual);
             reiniciarJuego();
 
             Swal.fire({
                 title: '¡Tiempo Agotado!',
-                text: `Se ha agotado el tiempo. Puntuación final: ${puntuacionActual}`,
+                html: `<p>Se ha agotado el tiempo.</p><br><p>La palabra buscada era: <strong style="color: #4ADE80; font-size: 1.3rem;">${palabraBuscada}</strong></p><br><p>Puntuación final: <strong>${puntuacionActual}</strong></p>`,
                 icon: 'warning',
                 confirmButtonText: 'Aceptar'
             });
@@ -787,12 +965,13 @@
 
         function avisoLose() {
             const puntuacionActual = parseInt(document.getElementById('label-score').textContent, 10);
+            const palabraBuscada = palabraCorrecta;
             guardarPuntuacion(puntuacionActual);
             reiniciarJuego();
 
             Swal.fire({
                 title: '¡Partida Finalizada!',
-                text: `Has agotado los 2 intentos para esta palabra. Puntuación final: ${puntuacionActual}`,
+                html: `<p>Has agotado los 3 intentos para esta palabra.</p><br><p>La palabra buscada era: <strong style="color: #4ADE80; font-size: 1.3rem;">${palabraBuscada}</strong></p><br><p>Puntuación final: <strong>${puntuacionActual}</strong></p>`,
                 icon: 'error',
                 confirmButtonText: 'Aceptar'
             });
@@ -839,7 +1018,11 @@
             boton.disabled = true;
 
             nivel = 1;
+            intentos = 3;
+            comodinesRestantes = 3;
             procesandoEstado = false;
+
+            await iniciarSesionFirebase();
 
             const pantalla = document.getElementById('pantalla-respuesta');
             pantalla.classList.remove('pantalla-fallo', 'pantalla-acierto');
@@ -847,30 +1030,18 @@
             document.getElementById('label-level').textContent = nivel;
             document.getElementById('label-score').textContent = '0';
 
+            actualizarInterfazComodines();
             await generarOperacion();
             iniciarBarraTiempo(TIEMPO_TOTAL_MS);
         }
 
-        function agregarLetra(letra) {
-            if (procesandoEstado) return;
-            if (entradaUsuario.length < palabraCorrecta.length + 2) {
-                entradaUsuario += letra.toUpperCase();
-                actualizarPantallaRespuesta();
-            }
-        }
-
-        function borrarCaracter() {
-            if (procesandoEstado) return;
-            entradaUsuario = entradaUsuario.slice(0, -1);
-            actualizarPantallaRespuesta();
-        }
-
         async function validarRespuesta() {
-            if (entradaUsuario === "" || !temporizador || procesandoEstado) return;
+            const palabraIngresada = casillasUsuario.join("");
+            if (palabraIngresada.includes("_") || !temporizador || procesandoEstado) return;
 
             const pantalla = document.getElementById('pantalla-respuesta');
 
-            if (entradaUsuario === palabraCorrecta) {
+            if (palabraIngresada === palabraCorrecta) {
                 procesandoEstado = true;
                 pantalla.classList.add('pantalla-acierto');
 
@@ -896,7 +1067,6 @@
                     title: `¡Correcto! (+${puntosGanados} pts)`
                 });
 
-                // Mantiene el color verde durante 1 segundo antes de avanzar
                 setTimeout(async () => {
                     pantalla.classList.remove('pantalla-acierto');
                     await generarOperacion();
@@ -925,7 +1095,11 @@
 
                     setTimeout(() => {
                         pantalla.classList.remove('pantalla-fallo');
-                        entradaUsuario = "";
+                        for (let i = 0; i < casillasUsuario.length; i++) {
+                            if (!casillasFijas[i]) {
+                                casillasUsuario[i] = "_";
+                            }
+                        }
                         actualizarPantallaRespuesta();
                         procesandoEstado = false;
                     }, 1000);
@@ -941,10 +1115,15 @@
             }
         }
 
+        // EVENTOS
         construirTeclado();
 
         document.getElementById('btn-comenzar').addEventListener('click', comenzarJuego);
         document.getElementById('btn-salir-fullscreen').addEventListener('click', salirPantallaCompleta);
+
+        for (let i = 1; i <= 3; i++) {
+            document.getElementById(`comodin-${i}`).addEventListener('click', usarComodin);
+        }
 
         document.addEventListener('keydown', (event) => {
             if (!temporizador || procesandoEstado) return;
