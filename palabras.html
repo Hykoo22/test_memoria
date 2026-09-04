@@ -208,7 +208,7 @@
             font-size: 0.95rem;
         }
 
-        /* ÁREA DE JUEGO */
+        /* ÁREA DE JUEGO AMBPLIADA */
         .game-container {
             display: flex;
             flex-direction: column;
@@ -216,7 +216,7 @@
             justify-content: center;
             gap: 20px;
             width: 100%;
-            max-width: 1100px;
+            max-width: 1250px;
             background-color: rgba(255, 255, 255, 0.02);
             border: 1px solid rgba(255, 255, 255, 0.05);
             border-radius: 16px;
@@ -330,16 +330,17 @@
             height: 90px;
             box-shadow: inset 0 2px 4px rgba(0,0,0,0.4);
             text-align: center;
+            overflow: hidden;
         }
 
         .operacion-texto {
-            font-size: clamp(2rem, 3.5vw, 3.2rem);
+            font-size: clamp(1.4rem, 2.5vw, 2.4rem);
             font-weight: 800;
             color: #FBBF24;
-            letter-spacing: 6px;
+            letter-spacing: 3px;
             font-family: 'Courier New', Courier, monospace;
             text-transform: uppercase;
-            word-break: break-all;
+            white-space: nowrap;
         }
 
         .box-pantalla-respuesta {
@@ -349,17 +350,18 @@
             border: 2px solid var(--primary-color);
             border-radius: 12px;
             color: #4ADE80;
-            font-size: clamp(1.8rem, 3.2vw, 3rem);
+            font-size: clamp(1.3rem, 2.3vw, 2.2rem);
             font-weight: bold;
             font-family: 'Courier New', Courier, monospace;
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 0 15px;
+            padding: 0 10px;
             box-shadow: inset 0 2px 5px rgba(0,0,0,0.5);
             overflow: hidden;
             text-transform: uppercase;
-            letter-spacing: 8px;
+            letter-spacing: 3px;
+            white-space: nowrap;
             transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
         }
 
@@ -554,6 +556,7 @@
         <header>
             <h2>Desafío de Anagramas</h2>
             <p>Ordena las letras para formar la palabra correcta antes de que acabe el tiempo</p>
+            <label id="test"></label>
         </header>
 
         <div class="game-container">
@@ -606,7 +609,7 @@
 
         // BANCO LOCAL DE RESPALDO
         const DICCIONARIO_LOCAL = {
-            cortas: ["CASA", "GATO", "PERRO", "MESA", "SOLAR", "LAGO", "NUBE", "FLOR", "PADRE", "MADRE", "LIBRO", "ARBOL"],
+             cortas: ["CASA", "GATO", "PERRO", "MESA", "SOLAR", "LAGO", "NUBE", "FLOR", "PADRE", "MADRE", "LIBRO", "ARBOL"],
             medianas: ["CAMINO", "CIUDAD", "TIEMPO", "PINTURA", "CABEZA", "CAMISA", "BLANCO", "MUSICA", "MADERA", "VERANO"],
             largas: ["VENTANA", "SEMANA", "JUGADOR", "TRABAJO", "HERMANO", "TELEFONO", "ESCUELA", "PLANETA", "MONTAÑA"],
             muyLargas: ["COMPUTADORA", "ARQUITECTURA", "DICCIONARIO", "FOTOGRAFIA", "LITERATURA", "MATEMATICAS"]
@@ -800,6 +803,9 @@
             return mezclada;
         }
 
+        // Variable global para almacenar el diccionario en español una sola vez
+        let diccionarioGlobalEspanol = null;
+
         async function obtenerPalabraAleatoria() {
             let minLongitud = 4, maxLongitud = 5;
             let categoriaLocal = "cortas";
@@ -809,24 +815,43 @@
             if (nivel >= 9) { minLongitud = 9; maxLongitud = 12; categoriaLocal = "muyLargas"; }
 
             let palabraCandidata = "";
-            let intentosSeleccion = 0;
 
-            while (intentosSeleccion < 10) {
-                intentosSeleccion++;
-                try {
-                    const response = await fetch(`https://rae-api.com/api/words/random?min=${minLongitud}&max=${maxLongitud}`);
-                    if (response.ok) {
-                        const data = await response.json();
-                        let palabraAPI = (data.word || data.palabra || "").toUpperCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-                        if (/^[A-ZÑ]+$/.test(palabraAPI) && !palabrasJugadasPartida.includes(palabraAPI)) {
-                            palabraCandidata = palabraAPI;
-                            break;
-                        }
+            try {
+                // Descarga un diccionario real en español alojado en jsDelivr
+                if (!diccionarioGlobalEspanol) {
+                    const resp = await fetch("https://cdn.jsdelivr.net/gh/bitcoin/bips@master/bip-0039/spanish.txt");
+                    
+                    if (resp.ok) {
+                        const texto = await resp.text();
+                        // Convertimos el archivo de texto (una palabra por línea) en un Array
+                        diccionarioGlobalEspanol = texto
+                            .split("\n")
+                            .map(w => w.trim().toUpperCase().normalize("NFD").replace(/[\u0300-\u036f]/g, ""))
+                            .filter(w => w.length > 0);
                     }
-                } catch (e) {
-                    console.warn("API no disponible, usando respaldo local:", e);
                 }
 
+                if (diccionarioGlobalEspanol && diccionarioGlobalEspanol.length > 0) {
+                    const palabrasFiltradas = diccionarioGlobalEspanol.filter(limpia => 
+                        /^[A-ZÑ]+$/.test(limpia) && 
+                        limpia.length >= minLongitud && 
+                        limpia.length <= maxLongitud && 
+                        !palabrasJugadasPartida.includes(limpia)
+                    );
+
+                    if (palabrasFiltradas.length > 0) {
+                        palabraCandidata = palabrasFiltradas[Math.floor(Math.random() * palabrasFiltradas.length)];
+                        document.getElementById("test").textContent="api";
+                    }
+                }
+            } catch (e) {
+                console.error("Error al obtener las palabras remotas:", e);
+            }
+
+            // Respaldo local
+            if (!palabraCandidata) {
+                document.getElementById("test").textContent="local";
+                console.warn("Utilizando diccionario de respaldo local.");
                 const listaLocal = DICCIONARIO_LOCAL[categoriaLocal];
                 const sinRepetir = listaLocal.filter(p => !palabrasJugadasPartida.includes(p));
                 
@@ -835,7 +860,6 @@
                 } else {
                     palabraCandidata = listaLocal[Math.floor(Math.random() * listaLocal.length)];
                 }
-                break;
             }
 
             await registrarPalabraEnFirebase(palabraCandidata);
