@@ -404,6 +404,8 @@
             cursor: pointer;
             transition: all 0.15s ease;
             user-select: none;
+            -webkit-user-select: none; /* Bloquea la selección accidental de texto en iOS */
+            touch-action: manipulation; /* Evita que el doble toque haga zoom */
             display: flex;
             align-items: center;
             justify-content: center;
@@ -556,7 +558,6 @@
         <header>
             <h2>Desafío de Anagramas</h2>
             <p>Ordena las letras para formar la palabra correcta antes de que acabe el tiempo</p>
-            <label id="test"></label>
         </header>
 
         <div class="game-container">
@@ -841,7 +842,6 @@
 
                     if (palabrasFiltradas.length > 0) {
                         palabraCandidata = palabrasFiltradas[Math.floor(Math.random() * palabrasFiltradas.length)];
-                        document.getElementById("test").textContent="api";
                     }
                 }
             } catch (e) {
@@ -850,7 +850,6 @@
 
             // Respaldo local
             if (!palabraCandidata) {
-                document.getElementById("test").textContent="local";
                 console.warn("Utilizando diccionario de respaldo local.");
                 const listaLocal = DICCIONARIO_LOCAL[categoriaLocal];
                 const sinRepetir = listaLocal.filter(p => !palabrasJugadasPartida.includes(p));

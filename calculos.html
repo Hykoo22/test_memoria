@@ -348,6 +348,8 @@
             justify-content: center;
             width: 100%;
             height: 100%;
+            -webkit-user-select: none; /* Bloquea la selección accidental de texto en iOS */
+            touch-action: manipulation; /* Evita que el doble toque haga zoom */
         }
 
         .btn-key:hover {
