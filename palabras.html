@@ -208,26 +208,26 @@
             font-size: 0.95rem;
         }
 
-        /* ÁREA DE JUEGO AMBPLIADA */
+        /* ÁREA DE JUEGO AMPLIADA */
         .game-container {
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            gap: 20px;
+            gap: 25px;
             width: 100%;
-            max-width: 1250px;
+            max-width: 1400px;
             background-color: rgba(255, 255, 255, 0.02);
             border: 1px solid rgba(255, 255, 255, 0.05);
             border-radius: 16px;
-            padding: 25px;
+            padding: 35px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.3);
         }
 
         /* PANEL SUPERIOR DE CONTROLES: INTENTOS Y COMODINES */
         .paneles-superiores {
             display: flex;
-            gap: 20px;
+            gap: 30px;
             justify-content: center;
             align-items: center;
             width: 100%;
@@ -235,27 +235,27 @@
         }
 
         .intentos-contenedor-exterior, .comodines-contenedor-exterior {
-            height: 55px;
-            padding: 0 20px;
+            height: 70px;
+            padding: 0 30px;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 12px;
+            gap: 16px;
             background-color: var(--sidebar-bg);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 12px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
             box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
         }
 
         .intentos-titulo, .comodines-titulo {
-            font-size: 0.85rem;
-            font-weight: 700;
+            font-size: 1.1rem;
+            font-weight: 800;
             color: #CBD5E1;
-            letter-spacing: 1.5px;
+            letter-spacing: 2px;
         }
 
         .corazon {
-            font-size: 1.4rem;
+            font-size: 1.9rem;
             transition: all 0.3s ease;
         }
 
@@ -274,13 +274,13 @@
         .btn-comodin {
             background: linear-gradient(145deg, #334155, #1e293b);
             border: 1px solid #475569;
-            border-radius: 10px;
-            width: 38px;
-            height: 38px;
+            border-radius: 12px;
+            width: 48px;
+            height: 48px;
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.2rem;
+            font-size: 1.5rem;
             cursor: pointer;
             box-shadow: 0 4px 0 #0f172a, 0 5px 8px rgba(0,0,0,0.4);
             transition: all 0.15s ease;
@@ -327,7 +327,7 @@
             border: 2px solid #334155;
             border-radius: 12px;
             padding: 15px;
-            height: 90px;
+            height: 95px;
             box-shadow: inset 0 2px 4px rgba(0,0,0,0.4);
             text-align: center;
             overflow: hidden;
@@ -345,7 +345,7 @@
 
         .box-pantalla-respuesta {
             flex: 1;
-            height: 90px;
+            height: 95px;
             background-color: #0F172A;
             border: 2px solid var(--primary-color);
             border-radius: 12px;
@@ -404,8 +404,8 @@
             cursor: pointer;
             transition: all 0.15s ease;
             user-select: none;
-            -webkit-user-select: none; /* Bloquea la selección accidental de texto en iOS */
-            touch-action: manipulation; /* Evita que el doble toque haga zoom */
+            -webkit-user-select: none;
+            touch-action: manipulation;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -490,6 +490,30 @@
 
             main {
                 padding: 10px;
+            }
+
+            .game-container {
+                padding: 15px;
+            }
+
+            .intentos-contenedor-exterior, .comodines-contenedor-exterior {
+                height: 55px;
+                padding: 0 15px;
+                gap: 10px;
+            }
+
+            .intentos-titulo, .comodines-titulo {
+                font-size: 0.9rem;
+            }
+
+            .corazon {
+                font-size: 1.4rem;
+            }
+
+            .btn-comodin {
+                width: 38px;
+                height: 38px;
+                font-size: 1.2rem;
             }
 
             .seccion-palabras {
@@ -610,15 +634,17 @@
 
         // BANCO LOCAL DE RESPALDO
         const DICCIONARIO_LOCAL = {
-             cortas: ["CASA", "GATO", "PERRO", "MESA", "SOLAR", "LAGO", "NUBE", "FLOR", "PADRE", "MADRE", "LIBRO", "ARBOL"],
+            cortas: ["CASA", "GATO", "PERRO", "MESA", "SOLAR", "LAGO", "NUBE", "FLOR", "PADRE", "MADRE", "LIBRO", "ARBOL"],
             medianas: ["CAMINO", "CIUDAD", "TIEMPO", "PINTURA", "CABEZA", "CAMISA", "BLANCO", "MUSICA", "MADERA", "VERANO"],
             largas: ["VENTANA", "SEMANA", "JUGADOR", "TRABAJO", "HERMANO", "TELEFONO", "ESCUELA", "PLANETA", "MONTAÑA"],
             muyLargas: ["COMPUTADORA", "ARQUITECTURA", "DICCIONARIO", "FOTOGRAFIA", "LITERATURA", "MATEMATICAS"]
         };
 
         let temporizador = null;
+        let temporizadorAutoPista = null;
         let tiempoRestante = 0;
         const TIEMPO_TOTAL_MS = 45000;
+        const INTERVALO_PISTA_AUTO_MS = 10000; // Revela una letra automática cada 10 segundos
         let nivel = 1;
         let intentos = 3;
         let comodinesRestantes = 3;
@@ -804,7 +830,6 @@
             return mezclada;
         }
 
-        // Variable global para almacenar el diccionario en español una sola vez
         let diccionarioGlobalEspanol = null;
 
         async function obtenerPalabraAleatoria() {
@@ -818,13 +843,11 @@
             let palabraCandidata = "";
 
             try {
-                // Descarga un diccionario real en español alojado en jsDelivr
                 if (!diccionarioGlobalEspanol) {
                     const resp = await fetch("https://cdn.jsdelivr.net/gh/bitcoin/bips@master/bip-0039/spanish.txt");
                     
                     if (resp.ok) {
                         const texto = await resp.text();
-                        // Convertimos el archivo de texto (una palabra por línea) en un Array
                         diccionarioGlobalEspanol = texto
                             .split("\n")
                             .map(w => w.trim().toUpperCase().normalize("NFD").replace(/[\u0300-\u036f]/g, ""))
@@ -848,7 +871,6 @@
                 console.error("Error al obtener las palabras remotas:", e);
             }
 
-            // Respaldo local
             if (!palabraCandidata) {
                 console.warn("Utilizando diccionario de respaldo local.");
                 const listaLocal = DICCIONARIO_LOCAL[categoriaLocal];
@@ -872,31 +894,68 @@
             const palabraDesordenada = desordenarPalabra(palabraCorrecta);
             document.getElementById('label-operacion').textContent = palabraDesordenada;
             
-            // Inicializar casillas vacías con "_"
             casillasUsuario = new Array(palabraCorrecta.length).fill("_");
             casillasFijas = new Array(palabraCorrecta.length).fill(false);
             
             intentos = 3;
             actualizarInterfazIntentos();
             actualizarPantallaRespuesta();
+            iniciarTemporizadorAutoPista();
         }
 
         function actualizarPantallaRespuesta() {
             document.getElementById('pantalla-respuesta').textContent = casillasUsuario.join(" ");
         }
 
-        function usarComodin() {
-            if (comodinesRestantes <= 0 || !temporizador || procesandoEstado) return;
+        // Revela una letra aleatoria sin completar todavía
+        function revelarLetraAleatoria() {
+            if (procesandoEstado) return;
 
-            let posAInsertar = -1;
+            let indicesLibres = [];
             for (let i = 0; i < palabraCorrecta.length; i++) {
                 if (!casillasFijas[i]) {
-                    posAInsertar = i;
-                    break;
+                    indicesLibres.push(i);
                 }
             }
 
-            if (posAInsertar !== -1) {
+            if (indicesLibres.length > 0) {
+                const posAleatoria = indicesLibres[Math.floor(Math.random() * indicesLibres.length)];
+                casillasUsuario[posAleatoria] = palabraCorrecta[posAleatoria];
+                casillasFijas[posAleatoria] = true;
+                actualizarPantallaRespuesta();
+
+                const Toast = Swal.mixin({
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    timer: 1200
+                });
+                Toast.fire({
+                    icon: 'info',
+                    title: `Pista de tiempo: "${palabraCorrecta[posAleatoria]}"`
+                });
+            }
+        }
+
+        function iniciarTemporizadorAutoPista() {
+            if (temporizadorAutoPista) clearInterval(temporizadorAutoPista);
+            temporizadorAutoPista = setInterval(() => {
+                revelarLetraAleatoria();
+            }, INTERVALO_PISTA_AUTO_MS);
+        }
+
+        function usarComodin() {
+            if (comodinesRestantes <= 0 || !temporizador || procesandoEstado) return;
+
+            let indicesLibres = [];
+            for (let i = 0; i < palabraCorrecta.length; i++) {
+                if (!casillasFijas[i]) {
+                    indicesLibres.push(i);
+                }
+            }
+
+            if (indicesLibres.length > 0) {
+                const posAInsertar = indicesLibres[0];
                 casillasUsuario[posAInsertar] = palabraCorrecta[posAInsertar];
                 casillasFijas[posAInsertar] = true;
                 comodinesRestantes--;
@@ -945,6 +1004,10 @@
             if (temporizador) {
                 clearInterval(temporizador);
                 temporizador = null;
+            }
+            if (temporizadorAutoPista) {
+                clearInterval(temporizadorAutoPista);
+                temporizadorAutoPista = null;
             }
             tiempoRestante = 0;
             nivel = 1;
@@ -1068,26 +1131,39 @@
                 procesandoEstado = true;
                 pantalla.classList.add('pantalla-acierto');
 
-                const puntosGanados = 15 + (nivel - 1) * 3;
+                // CÁLCULO DE PUNTOS CON PENALIZACIÓN POR LETRAS FIXADAS/REVELADAS
+                const basePuntos = 15 + (nivel - 1) * 3;
+                const letrasReveladas = casillasFijas.filter(fija => fija === true).length;
+                const penalizacionPorLetra = 4; // Puntos restados por cada letra revelada
+
+                // Se garantiza una puntuación mínima de 2 puntos por acierto
+                const puntosGanados = Math.max(2, basePuntos - (letrasReveladas * penalizacionPorLetra));
+
                 const scoreLabel = document.getElementById('label-score');
                 scoreLabel.textContent = parseInt(scoreLabel.textContent, 10) + puntosGanados;
 
                 nivel++;
                 document.getElementById('label-level').textContent = nivel;
 
-                tiempoRestante += 6000;
-                if (tiempoRestante > TIEMPO_TOTAL_MS) tiempoRestante = TIEMPO_TOTAL_MS;
+                // Relleno completo del tiempo al acertar la palabra
+                tiempoRestante = TIEMPO_TOTAL_MS;
 
                 const Toast = Swal.mixin({
                     toast: true,
                     position: 'top-end',
                     showConfirmButton: false,
-                    timer: 1000,
+                    timer: 1200,
                     timerProgressBar: true
                 });
+                
+                let msjDetalle = `¡Correcto! (+${puntosGanados} pts)`;
+                if (letrasReveladas > 0) {
+                    msjDetalle += ` [ -${letrasReveladas * penalizacionPorLetra} por pistas ]`;
+                }
+
                 Toast.fire({
                     icon: 'success',
-                    title: `¡Correcto! (+${puntosGanados} pts)`
+                    title: msjDetalle
                 });
 
                 setTimeout(async () => {

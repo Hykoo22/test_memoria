@@ -4,7 +4,7 @@
     <link rel="manifest" href="manifest.json">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Cálculo Mental - Mente En Forma</title>
   
     <style>
@@ -14,6 +14,9 @@
             margin: 0;
             padding: 0;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            touch-action: manipulation;
+            -webkit-user-select: none;
+            user-select: none;
         }
 
         :root {
@@ -180,47 +183,46 @@
             color: #FBBF24;
         }
 
-        /* CONTENIDO PRINCIPAL */
+        /* CONTENIDO PRINCIPAL MAXIMIZADO */
         main {
             flex: 1;
-            padding: 20px;
-            overflow-y: auto;
+            padding: 10px;
+            overflow: hidden;
             background-color: var(--main-bg);
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
+            justify-content: flex-start;
         }
 
         header {
-            margin-bottom: 15px;
+            margin-bottom: 8px;
             text-align: center;
         }
 
         header h2 {
-            font-size: 1.8rem;
+            font-size: 1.5rem;
             color: #F8FAFC;
-            margin-bottom: 4px;
         }
 
         header p {
             color: #94A3B8;
-            font-size: 0.95rem;
+            font-size: 0.85rem;
         }
 
-        /* ÁREA DE JUEGO DIVIDIDA */
+        /* ÁREA DE JUEGO MAXIMIZADA */
         .game-container {
             display: flex;
             flex-direction: row;
-            align-items: flex-end;
+            align-items: stretch;
             justify-content: center;
             gap: 30px;
             width: 100%;
-            max-width: 900px;
+            height: calc(100% - 40px);
             background-color: rgba(255, 255, 255, 0.02);
             border: 1px solid rgba(255, 255, 255, 0.05);
             border-radius: 16px;
-            padding: 25px;
+            padding: 15px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.3);
         }
 
@@ -229,11 +231,12 @@
             flex: 1;
             display: flex;
             flex-direction: column;
-            width: 100%;
+            height: 100%;
         }
 
         .columna-juego.derecha {
-            max-width: 320px;
+            flex: 1;
+            max-width: 450px;
         }
 
         /* CABECERA EXTERIOR DE INTENTOS */
@@ -246,7 +249,7 @@
             background-color: var(--sidebar-bg);
             border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 10px;
-            margin-bottom: 15px;
+            margin-bottom: 12px;
             box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
         }
 
@@ -276,6 +279,7 @@
 
         /* SECCIÓN IZQUIERDA: OPERACIÓN */
         .operacion-box {
+            flex: 1;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -283,40 +287,80 @@
             border: 2px solid #334155;
             border-radius: 16px;
             padding: 20px;
-            height: clamp(220px, 35vh, 350px);
             box-shadow: inset 0 2px 4px rgba(0,0,0,0.4);
         }
 
-        .operacion-texto {
-            font-size: clamp(2.2rem, 4.5vw, 3.8rem);
+        /* Estructura para estándar (+, -, x) */
+        .operacion-vertical {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            font-size: clamp(3.5rem, 7vw, 6.5rem);
             font-weight: 800;
             color: #F8FAFC;
-            letter-spacing: 2px;
+            font-family: 'Courier New', Courier, monospace;
+            line-height: 1.1;
+        }
+
+        .operacion-fila-inferior {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            width: 100%;
+            border-bottom: 4px solid #F8FAFC;
+            padding-bottom: 5px;
+        }
+
+        .operador-simbolo {
+            margin-right: 45px;
+            color: #38BDF8;
+        }
+
+        /* Estructura para División (Dividendo a la izq, Divisor a la der con bordes izq y abajo) */
+        .division-galera {
+            display: flex;
+            align-items: center;
+            font-size: clamp(3.5rem, 7vw, 6.5rem);
+            font-weight: 800;
+            color: #F8FAFC;
             font-family: 'Courier New', Courier, monospace;
         }
 
-        /* SECCIÓN DERECHA: TECLADO Y ENTRADA */
+        .division-dividendo {
+            padding-right: 25px;
+        }
+
+        .division-divisor {
+            color: #38BDF8;
+            border-left: 5px solid #F8FAFC;
+            border-bottom: 5px solid #F8FAFC;
+            padding-left: 25px;
+            padding-bottom: 5px;
+            border-bottom-left-radius: 4px;
+        }
+
+        /* SECCIÓN DERECHA: TECLADO Y ENTRADA AMPLIADA */
         .pantalla-respuesta {
             width: 100%;
-            height: 50px;
+            height: 80px;
             background-color: #0F172A;
             border: 2px solid var(--primary-color);
-            border-radius: 10px;
+            border-radius: 12px;
             color: #4ADE80;
-            font-size: 1.8rem;
+            font-size: 2.8rem;
             font-weight: bold;
             font-family: 'Courier New', Courier, monospace;
             display: flex;
             align-items: center;
             justify-content: flex-end;
-            padding: 0 15px;
-            margin-bottom: 15px;
+            padding: 0 20px;
+            margin-bottom: 16px;
             box-shadow: inset 0 2px 5px rgba(0,0,0,0.5);
             overflow: hidden;
             transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
         }
 
-        /* ESTILO PARA PANTALLA EN ERROR (ROJO SUAVE) */
+        /* ESTILO PARA PANTALLA EN ERROR */
         .pantalla-respuesta.pantalla-fallo {
             background-color: #7F1D1D !important;
             border-color: #EF4444 !important;
@@ -324,12 +368,12 @@
         }
 
         .teclado-grid {
+            flex: 1;
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             grid-template-rows: repeat(5, 1fr);
-            gap: 8px;
+            gap: 10px;
             width: 100%;
-            height: clamp(220px, 35vh, 350px);
         }
 
         .btn-key {
@@ -337,24 +381,21 @@
             color: #FFFFFF;
             border: 2px solid #334155;
             border-radius: 8px;
-            font-size: clamp(1.2rem, 2.5vw, 1.5rem);
+            font-size: clamp(1.5rem, 3.5vh, 2.2rem);
             font-weight: bold;
             cursor: pointer;
             transition: all 0.15s ease;
-            user-select: none;
             box-shadow: 0 4px 6px rgba(0,0,0,0.2);
             display: flex;
             align-items: center;
             justify-content: center;
             width: 100%;
             height: 100%;
-            -webkit-user-select: none; /* Bloquea la selección accidental de texto en iOS */
-            touch-action: manipulation; /* Evita que el doble toque haga zoom */
         }
 
         .btn-key:hover {
             background-color: var(--cell-hover);
-            transform: scale(1.03);
+            transform: scale(1.02);
             border-color: var(--primary-color);
         }
 
@@ -386,7 +427,7 @@
             background-color: #15803D;
         }
 
-        /* RESPONSIVE IPAD Y TABLETS (Barra lateral a la izquierda) */
+        /* RESPONSIVE IPAD Y TABLETS */
         @media (max-width: 1024px) {
             body {
                 flex-direction: row;
@@ -420,11 +461,11 @@
 
             .game-container {
                 gap: 20px;
-                padding: 15px;
+                padding: 10px;
             }
         }
 
-        /* RESPONSIVE MÓVILES (Barra lateral arriba) */
+        /* RESPONSIVE MÓVILES */
         @media (max-width: 600px) {
             body {
                 flex-direction: column;
@@ -469,9 +510,8 @@
 
             .game-container {
                 flex-direction: column;
-                align-items: center;
                 gap: 15px;
-                padding: 15px;
+                padding: 10px;
             }
 
             .columna-juego.derecha {
@@ -479,11 +519,12 @@
             }
 
             .operacion-box {
-                height: 120px;
+                height: 160px;
             }
 
-            .teclado-grid {
-                height: 240px;
+            .pantalla-respuesta {
+                height: 65px;
+                font-size: 2.2rem;
             }
         }
     </style>
@@ -499,7 +540,7 @@
             <svg viewBox="0 0 24 24">
                 <path d="M19,3H5C3.89,3 3,3.89 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V5C21,3.89 20.1,3 19,3M19,19H5V5H19V19M11,7H13V9H15V11H13V13H11V11H9V9H11V7M11,15H15V17H11V15Z"/>
             </svg>
-            <h1>Mente En Forma</h1>
+            <h1>Cálculo Rápido</h1>
         </div>
 
         <span class="menu-label">Cálculo Mental</span>
@@ -531,20 +572,28 @@
     <!-- ÁREA DE CONTENIDO -->
     <main>
         <header>
-            <h2>Cálculo Rápido</h2>
-            <p>Resuelve la operación matemática antes de que finalice el tiempo</p>
+
         </header>
 
         <div class="game-container">
-            <!-- COLUMNA IZQUIERDA: INTENTOS + OPERACIÓN -->
+            <!-- COLUMNA IZQUIERDA: INTENTOS + OPERACIÓN VERTICAL -->
             <div class="columna-juego">
                 <div class="intentos-contenedor-exterior">
                     <span class="intentos-titulo">INTENTOS:</span>
                     <span id="corazon-1" class="corazon activo">❤️</span>
                     <span id="corazon-2" class="corazon activo">❤️</span>
+                    <span id="corazon-3" class="corazon activo">❤️</span>
                 </div>
                 <div class="operacion-box">
-                    <div id="label-operacion" class="operacion-texto">? + ?</div>
+                    <div id="label-operacion">
+                        <div class="operacion-vertical">
+                            <div>?</div>
+                            <div class="operacion-fila-inferior">
+                                <span class="operador-simbolo">+</span>
+                                <span>?</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -598,7 +647,7 @@
         let tiempoRestante = 0;
         const TIEMPO_TOTAL_MS = 25000;
         let nivel = 1;
-        let intentos = 2;
+        let intentos = 3;
         let resultadoCorrecto = 0;
         let entradaUsuario = "";
         let procesandoFallo = false;
@@ -682,16 +731,24 @@
         function actualizarInterfazIntentos() {
             const corazon1 = document.getElementById('corazon-1');
             const corazon2 = document.getElementById('corazon-2');
+            const corazon3 = document.getElementById('corazon-3');
 
-            if (intentos === 2) {
+            if (intentos === 3) {
                 corazon1.className = "corazon activo";
                 corazon2.className = "corazon activo";
+                corazon3.className = "corazon activo";
+            } else if (intentos === 2) {
+                corazon1.className = "corazon activo";
+                corazon2.className = "corazon activo";
+                corazon3.className = "corazon inactivo";
             } else if (intentos === 1) {
                 corazon1.className = "corazon activo";
                 corazon2.className = "corazon inactivo";
+                corazon3.className = "corazon inactivo";
             } else {
                 corazon1.className = "corazon inactivo";
                 corazon2.className = "corazon inactivo";
+                corazon3.className = "corazon inactivo";
             }
         }
 
@@ -706,28 +763,57 @@
 
             operador = operadoresPermitidos[Math.floor(Math.random() * operadoresPermitidos.length)];
 
+            const contOperacion = document.getElementById('label-operacion');
+
             if (operador === "+") {
                 const max = Math.min(10 + nivel * 5, 99);
-                num1 = Math.floor(Math.random() * max) + 1;
-                num2 = Math.floor(Math.random() * max) + 1;
+                let a = Math.floor(Math.random() * max) + 1;
+                let b = Math.floor(Math.random() * max) + 1;
+                num1 = Math.max(a, b);
+                num2 = Math.min(a, b);
                 resultadoCorrecto = num1 + num2;
             } else if (operador === "-") {
                 const max = Math.min(10 + nivel * 5, 99);
-                num1 = Math.floor(Math.random() * max) + 5;
-                num2 = Math.floor(Math.random() * num1) + 1;
+                let a = Math.floor(Math.random() * max) + 5;
+                let b = Math.floor(Math.random() * a) + 1;
+                num1 = Math.max(a, b);
+                num2 = Math.min(a, b);
                 resultadoCorrecto = num1 - num2;
             } else if (operador === "×") {
-                num1 = Math.floor(Math.random() * 8) + 2;
-                const maxNum2 = Math.floor(99 / num1);
-                num2 = Math.floor(Math.random() * (maxNum2 - 1)) + 2;
+                let a = Math.floor(Math.random() * 8) + 2;
+                const maxNum2 = Math.floor(99 / a);
+                let b = Math.floor(Math.random() * (maxNum2 - 1)) + 2;
+                num1 = Math.max(a, b);
+                num2 = Math.min(a, b);
                 resultadoCorrecto = num1 * num2;
             } else if (operador === "÷") {
                 resultadoCorrecto = Math.floor(Math.random() * 15) + 2;
-                num2 = Math.floor(Math.random() * 8) + 2;
-                num1 = resultadoCorrecto * num2;
+                num2 = Math.floor(Math.random() * 8) + 2; // Divisor
+                num1 = resultadoCorrecto * num2; // Dividendo (mayor)
             }
 
-            document.getElementById('label-operacion').textContent = `${num1} ${operador} ${num2}`;
+            // Renderizado visual
+            if (operador === "÷") {
+                // Formato: dividendo a la izquierda, divisor a la derecha rodeado con bordes a la izquierda y abajo
+                contOperacion.innerHTML = `
+                    <div class="division-galera">
+                        <span class="division-dividendo">${num1}</span>
+                        <span class="division-divisor">${num2}</span>
+                    </div>
+                `;
+            } else {
+                // Formato vertical (+, -, x)
+                contOperacion.innerHTML = `
+                    <div class="operacion-vertical">
+                        <div>${num1}</div>
+                        <div class="operacion-fila-inferior">
+                            <span class="operador-simbolo">${operador}</span>
+                            <span>${num2}</span>
+                        </div>
+                    </div>
+                `;
+            }
+
             entradaUsuario = "";
             actualizarPantallaRespuesta();
         }
@@ -743,7 +829,7 @@
             }
             tiempoRestante = 0;
             nivel = 1;
-            intentos = 2;
+            intentos = 3;
             procesandoFallo = false;
             
             const pantalla = document.getElementById('pantalla-respuesta');
@@ -752,7 +838,15 @@
             actualizarInterfazIntentos();
 
             document.getElementById('label-level').textContent = nivel;
-            document.getElementById('label-operacion').textContent = "? + ?";
+            document.getElementById('label-operacion').innerHTML = `
+                <div class="operacion-vertical">
+                    <div>?</div>
+                    <div class="operacion-fila-inferior">
+                        <span class="operador-simbolo">+</span>
+                        <span>?</span>
+                    </div>
+                </div>
+            `;
             entradaUsuario = "";
             actualizarPantallaRespuesta();
 
@@ -827,15 +921,13 @@
 
         // 9. Iniciar Partida
         function comenzarJuego() {
-            //solicitarPantallaCompleta();
-
             const boton = document.getElementById('btn-comenzar');
             boton.style.backgroundColor = '#808080';
             boton.style.cursor = 'not-allowed';
             boton.disabled = true;
 
             nivel = 1;
-            intentos = 2;
+            intentos = 3;
             procesandoFallo = false;
             
             document.getElementById('pantalla-respuesta').classList.remove('pantalla-fallo');
@@ -912,10 +1004,9 @@
                     });
                     Toast.fire({
                         icon: 'error',
-                        title: `¡Incorrecto! Te queda ${intentos} intento`
+                        title: `¡Incorrecto! Te quedan ${intentos} intentos`
                     });
 
-                    // Mostrar pantalla en rojo suave durante 1 segundo
                     setTimeout(() => {
                         pantalla.classList.remove('pantalla-fallo');
                         procesandoFallo = false;
