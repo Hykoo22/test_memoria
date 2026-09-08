@@ -227,35 +227,37 @@
         /* PANEL SUPERIOR DE CONTROLES: INTENTOS Y COMODINES */
         .paneles-superiores {
             display: flex;
-            gap: 30px;
+            gap: 15px;
             justify-content: center;
             align-items: center;
             width: 100%;
-            flex-wrap: wrap;
+            flex-wrap: nowrap;
         }
 
         .intentos-contenedor-exterior, .comodines-contenedor-exterior {
-            height: 70px;
-            padding: 0 30px;
+            height: 60px;
+            padding: 0 16px;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 16px;
+            gap: 10px;
             background-color: var(--sidebar-bg);
             border: 2px solid rgba(255, 255, 255, 0.1);
             border-radius: 16px;
             box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+            flex: 0 1 auto;
         }
 
         .intentos-titulo, .comodines-titulo {
-            font-size: 1.1rem;
+            font-size: 0.95rem;
             font-weight: 800;
             color: #CBD5E1;
-            letter-spacing: 2px;
+            letter-spacing: 1px;
+            white-space: nowrap;
         }
 
         .corazon {
-            font-size: 1.9rem;
+            font-size: 1.5rem;
             transition: all 0.3s ease;
         }
 
@@ -274,24 +276,25 @@
         .btn-comodin {
             background: linear-gradient(145deg, #334155, #1e293b);
             border: 1px solid #475569;
-            border-radius: 12px;
-            width: 48px;
-            height: 48px;
+            border-radius: 10px;
+            width: 40px;
+            height: 40px;
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.5rem;
+            font-size: 1.2rem;
             cursor: pointer;
-            box-shadow: 0 4px 0 #0f172a, 0 5px 8px rgba(0,0,0,0.4);
+            box-shadow: 0 3px 0 #0f172a, 0 4px 6px rgba(0,0,0,0.4);
             transition: all 0.15s ease;
             user-select: none;
+            flex-shrink: 0;
         }
 
         .btn-comodin:hover:not(:disabled) {
             transform: translateY(-2px);
             background: linear-gradient(145deg, #475569, #334155);
             border-color: #FBBF24;
-            box-shadow: 0 6px 0 #0f172a, 0 8px 12px rgba(251, 191, 36, 0.2);
+            box-shadow: 0 5px 0 #0f172a, 0 6px 10px rgba(251, 191, 36, 0.2);
         }
 
         .btn-comodin:active:not(:disabled) {
@@ -446,6 +449,33 @@
         }
 
         /* RESPONSIVE */
+        @media (max-width: 1024px) {
+            .paneles-superiores {
+                gap: 10px;
+            }
+
+            .intentos-contenedor-exterior, .comodines-contenedor-exterior {
+                height: 52px;
+                padding: 0 10px;
+                gap: 6px;
+            }
+
+            .intentos-titulo, .comodines-titulo {
+                font-size: 0.8rem;
+                letter-spacing: 0.5px;
+            }
+
+            .corazon {
+                font-size: 1.2rem;
+            }
+
+            .btn-comodin {
+                width: 34px;
+                height: 34px;
+                font-size: 1.1rem;
+            }
+        }
+
         @media (max-width: 900px) {
             body {
                 flex-direction: column;
@@ -496,26 +526,6 @@
                 padding: 15px;
             }
 
-            .intentos-contenedor-exterior, .comodines-contenedor-exterior {
-                height: 55px;
-                padding: 0 15px;
-                gap: 10px;
-            }
-
-            .intentos-titulo, .comodines-titulo {
-                font-size: 0.9rem;
-            }
-
-            .corazon {
-                font-size: 1.4rem;
-            }
-
-            .btn-comodin {
-                width: 38px;
-                height: 38px;
-                font-size: 1.2rem;
-            }
-
             .seccion-palabras {
                 flex-direction: column;
                 gap: 10px;
@@ -548,7 +558,7 @@
             <svg viewBox="0 0 24 24">
                 <path d="M12,3A9,9 0 0,0 3,12A9,9 0 0,0 12,21A9,9 0 0,0 21,12A9,9 0 0,0 12,3M12,5A7,7 0 0,1 19,12C19,13.86 18.27,15.55 17.08,16.81L15.66,15.39C16.5,14.47 17,13.29 17,12A5,5 0 0,0 12,7A5,5 0 0,0 7,12C7,13.29 7.5,14.47 8.34,15.39L6.92,16.81C5.73,15.55 5,13.86 5,12A7,7 0 0,1 12,5M12,9A3,3 0 0,0 9,12C9,12.83 9.34,13.58 9.89,14.12L11.31,12.7C11.11,12.5 11,12.26 11,12A1,1 0 0,1 12,11A1,1 0 0,1 13,12C13,12.26 12.89,12.5 12.69,12.7L14.11,14.12C14.66,13.58 15,12.83 15,12A3,3 0 0,0 12,9Z"/>
             </svg>
-            <h1>Mente En Forma</h1>
+            <h1>Palabras desordenadas</h1>
         </div>
 
         <span class="menu-label">Anagramas</span>
@@ -579,10 +589,6 @@
 
     <!-- ÁREA DE CONTENIDO -->
     <main>
-        <header>
-            <h2>Desafío de Anagramas</h2>
-            <p>Ordena las letras para formar la palabra correcta antes de que acabe el tiempo</p>
-        </header>
 
         <div class="game-container">
             <!-- PANELES SUPERIORES: INTENTOS Y COMODINES -->
@@ -650,6 +656,9 @@
         let comodinesRestantes = 3;
         let palabraCorrecta = "";
         
+        // Control de pista acumulada por tiempo si el usuario está escribiendo
+        let pistaPendiente = false;
+
         // Control de sesión y palabras jugadas en Firebase
         let idSesionJuego = null;
         let palabrasJugadasPartida = [];
@@ -658,6 +667,16 @@
         let casillasUsuario = []; 
         let casillasFijas = []; 
         let procesandoEstado = false;
+
+        function usuarioEstaEscribiendo() {
+            // Devuelve true si el usuario ha introducido al menos una letra no fija
+            for (let i = 0; i < casillasUsuario.length; i++) {
+                if (!casillasFijas[i] && casillasUsuario[i] !== "_") {
+                    return true;
+                }
+            }
+            return false;
+        }
 
         function construirTeclado() {
             const contenedor = document.getElementById('teclado');
@@ -897,6 +916,7 @@
             casillasUsuario = new Array(palabraCorrecta.length).fill("_");
             casillasFijas = new Array(palabraCorrecta.length).fill(false);
             
+            pistaPendiente = false;
             intentos = 3;
             actualizarInterfazIntentos();
             actualizarPantallaRespuesta();
@@ -911,6 +931,16 @@
         function revelarLetraAleatoria() {
             if (procesandoEstado) return;
 
+            // Si el usuario está escribiendo, no la insertamos ahora; marcamos que hay una pendiente
+            if (usuarioEstaEscribiendo()) {
+                pistaPendiente = true;
+                return;
+            }
+
+            hacerInsercionLetraPista();
+        }
+
+        function hacerInsercionLetraPista() {
             let indicesLibres = [];
             for (let i = 0; i < palabraCorrecta.length; i++) {
                 if (!casillasFijas[i]) {
@@ -935,6 +965,7 @@
                     title: `Pista de tiempo: "${palabraCorrecta[posAleatoria]}"`
                 });
             }
+            pistaPendiente = false;
         }
 
         function iniciarTemporizadorAutoPista() {
@@ -1014,6 +1045,7 @@
             intentos = 3;
             comodinesRestantes = 3;
             procesandoEstado = false;
+            pistaPendiente = false;
             idSesionJuego = null;
             palabrasJugadasPartida = [];
 
@@ -1107,6 +1139,7 @@
             intentos = 3;
             comodinesRestantes = 3;
             procesandoEstado = false;
+            pistaPendiente = false;
 
             await iniciarSesionFirebase();
 
@@ -1136,7 +1169,7 @@
                 const letrasReveladas = casillasFijas.filter(fija => fija === true).length;
                 const penalizacionPorLetra = 4; // Puntos restados por cada letra revelada
 
-                // Se garantiza una puntuación mínima de 2 puntos por acierto
+                // Se garantiza una puntuación mínima de 2 puntos por acierto[cite: 3]
                 const puntosGanados = Math.max(2, basePuntos - (letrasReveladas * penalizacionPorLetra));
 
                 const scoreLabel = document.getElementById('label-score');
@@ -1194,6 +1227,8 @@
 
                     setTimeout(() => {
                         pantalla.classList.remove('pantalla-fallo');
+                        
+                        // Reseteamos las letras introducidas por el usuario conservando las fijas
                         for (let i = 0; i < casillasUsuario.length; i++) {
                             if (!casillasFijas[i]) {
                                 casillasUsuario[i] = "_";
@@ -1201,6 +1236,11 @@
                         }
                         actualizarPantallaRespuesta();
                         procesandoEstado = false;
+
+                        // Si mientras escribía la respuesta errónea le correspondía una pista por tiempo, la añadimos ahora
+                        if (pistaPendiente) {
+                            hacerInsercionLetraPista();
+                        }
                     }, 1000);
                 } else {
                     if (temporizador) {
